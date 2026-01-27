@@ -2,6 +2,9 @@
 
 import React, { useState } from 'react';
 import { Edit3, Trash2, Check, X, GripVertical } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
 
 interface QuestionCardProps {
     question: {
@@ -126,9 +129,14 @@ export default function QuestionCard({
                      font-medium text-[#003366]"
                 />
             ) : (
-                <p className="text-[#003366] font-medium mb-4 whitespace-pre-wrap">
-                    {question.content}
-                </p>
+                <div className="text-[#003366] font-medium mb-4 markdown-content">
+                    <ReactMarkdown
+                        remarkPlugins={[remarkMath]}
+                        rehypePlugins={[rehypeKatex]}
+                    >
+                        {question.content}
+                    </ReactMarkdown>
+                </div>
             )}
 
             {/* Options */}
@@ -188,10 +196,17 @@ export default function QuestionCard({
                                         })
                                     }
                                     className="flex-1 p-2 border-2 border-[#003366]/20 rounded-none
-                             focus:border-[#003366] focus:outline-none bg-white"
+                             focus:border-[#003366] focus:outline-none bg-white font-medium"
                                 />
                             ) : (
-                                <span className="flex-1 text-[#003366]/80">{question[key]}</span>
+                                <div className="flex-1 text-[#003366]/80 font-medium markdown-content">
+                                    <ReactMarkdown
+                                        remarkPlugins={[remarkMath]}
+                                        rehypePlugins={[rehypeKatex]}
+                                    >
+                                        {question[key]}
+                                    </ReactMarkdown>
+                                </div>
                             )}
                         </div>
                     );

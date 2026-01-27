@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Be_Vietnam_Pro } from 'next/font/google';
 import './globals.css';
+import 'katex/dist/katex.min.css';
 import { AuthProvider } from '@/providers/AuthProvider';
 
 const beVietnamPro = Be_Vietnam_Pro({

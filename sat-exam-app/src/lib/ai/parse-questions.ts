@@ -22,13 +22,17 @@ RULES:
 2. The correctAnswer field must be exactly 'A', 'B', 'C', or 'D'
 3. If the correct answer is not clearly marked, make your best educated guess based on the content
 4. Clean up any formatting artifacts from PDF extraction (weird characters, line breaks in wrong places)
-5. Keep the original question language (Vietnamese or English)
-6. If you cannot find any valid questions, return an empty array []
+5. MATH & EXPONENTS: Pay special attention to math.
+   - If you see "x 2" or similar where it's clearly an exponent, convert it to LaTeX: "$x^2$".
+   - Use "$...$" for inline math and "$$...$$" for block math.
+   - Always format powers, square roots, and fractions using LaTeX.
+6. Keep the original question language (Vietnamese or English)
+7. If you cannot find any valid questions, return an empty array []
 
 OUTPUT FORMAT (JSON array):
 [
   {
-    "content": "The full question text",
+    "content": "The full question text (with LaTeX if needed)",
     "optionA": "First option text",
     "optionB": "Second option text", 
     "optionC": "Third option text",
