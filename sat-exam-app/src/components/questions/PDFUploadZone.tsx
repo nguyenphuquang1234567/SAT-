@@ -5,9 +5,10 @@ import { Upload, FileText, Loader2 } from 'lucide-react';
 
 interface PDFUploadZoneProps {
     examId: string;
-    onParseComplete: (questions: ParsedQuestion[]) => void;
+    onParseComplete: (questions: ParsedQuestion[], pdfUrl?: string) => void;
     onError: (error: string) => void;
 }
+
 
 export interface ParsedQuestion {
     content: string;
@@ -57,7 +58,8 @@ export default function PDFUploadZone({
                     throw new Error(data.error || 'Upload failed');
                 }
 
-                onParseComplete(data.questions);
+                onParseComplete(data.questions, data.pdfUrl);
+
             } catch (error) {
                 onError(error instanceof Error ? error.message : 'Upload failed');
             } finally {

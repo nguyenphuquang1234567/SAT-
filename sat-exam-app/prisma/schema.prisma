@@ -58,7 +58,9 @@ model Exam {
   duration         Int
   startTime        DateTime?
   endTime          DateTime?
+  pdfUrl           String?
   classId          String
+
   shuffleQuestions Boolean       @default(true)
   shuffleAnswers   Boolean       @default(true)
   maxViolations    Int           @default(3)

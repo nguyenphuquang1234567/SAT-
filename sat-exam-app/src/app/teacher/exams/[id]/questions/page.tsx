@@ -18,8 +18,10 @@ interface Exam {
     id: string;
     title: string;
     status: string;
+    pdfUrl?: string;
     class: { name: string };
 }
+
 
 interface Question {
     id: string;
@@ -43,6 +45,7 @@ export default function QuestionsPage({
     const [exam, setExam] = useState<Exam | null>(null);
     const [savedQuestions, setSavedQuestions] = useState<Question[]>([]);
     const [parsedQuestions, setParsedQuestions] = useState<ParsedQuestion[]>([]);
+    const [currentPdfUrl, setCurrentPdfUrl] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -61,6 +64,7 @@ export default function QuestionsPage({
 
                 const examData = await examRes.json();
                 setExam(examData);
+                if (examData.pdfUrl) setCurrentPdfUrl(examData.pdfUrl);
 
                 if (questionsRes.ok) {
                     const questionsData = await questionsRes.json();
@@ -77,8 +81,9 @@ export default function QuestionsPage({
     }, [examId]);
 
     // Handle parsed questions from PDF
-    const handleParseComplete = useCallback((questions: ParsedQuestion[]) => {
+    const handleParseComplete = useCallback((questions: ParsedQuestion[], pdfUrl?: string) => {
         setParsedQuestions(questions);
+        if (pdfUrl) setCurrentPdfUrl(pdfUrl);
         setSuccessMessage(`AI đã trích xuất ${questions.length} câu hỏi từ PDF`);
         setTimeout(() => setSuccessMessage(null), 5000);
     }, []);
@@ -94,8 +99,12 @@ export default function QuestionsPage({
             const response = await fetch(`/api/exams/${examId}/questions`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ questions: parsedQuestions }),
+                body: JSON.stringify({
+                    questions: parsedQuestions,
+                    pdfUrl: currentPdfUrl
+                }),
             });
+
 
             if (!response.ok) {
                 const data = await response.json();
@@ -264,7 +273,21 @@ export default function QuestionsPage({
                         <FileText className="w-4 h-4" />
                         Xem Trước
                     </button>
+
+                    {currentPdfUrl && (
+                        <a
+                            href={currentPdfUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-2 px-4 py-2 bg-[#003366]/10 text-[#003366]
+                           hover:bg-[#003366] hover:text-white transition-colors font-semibold"
+                        >
+                            <FileText className="w-4 h-4" />
+                            PDF Gốc
+                        </a>
+                    )}
                 </div>
+
             </div>
 
             {/* Status Messages */}

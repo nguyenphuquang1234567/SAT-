@@ -87,7 +87,7 @@ export async function POST(
         }
 
         const body = await request.json();
-        const { questions } = body;
+        const { questions, pdfUrl } = body;
 
         if (!Array.isArray(questions) || questions.length === 0) {
             return NextResponse.json(
@@ -96,40 +96,46 @@ export async function POST(
             );
         }
 
-        // Get current max order
-        const maxOrder = await prisma.question.aggregate({
-            where: { examId },
-            _max: { order: true },
-        });
-        const startOrder = (maxOrder._max.order ?? 0) + 1;
+        // Use a transaction to create questions and optionally update exam pdfUrl
+        const result = await prisma.$transaction(async (tx) => {
+            // Get current max order
+            const maxOrder = await tx.question.aggregate({
+                where: { examId },
+                _max: { order: true },
+            });
+            const startOrder = (maxOrder._max.order ?? 0) + 1;
 
-        // Create questions with order
-        const createdQuestions = await prisma.question.createMany({
-            data: questions.map((q: {
-                content: string;
-                optionA: string;
-                optionB: string;
-                optionC: string;
-                optionD: string;
-                correctAnswer: string;
-                points?: number;
-            }, index: number) => ({
-                examId,
-                content: q.content,
-                optionA: q.optionA,
-                optionB: q.optionB,
-                optionC: q.optionC,
-                optionD: q.optionD,
-                correctAnswer: q.correctAnswer,
-                points: q.points ?? 1,
-                order: startOrder + index,
-            })),
+            // Create questions
+            const created = await tx.question.createMany({
+                data: questions.map((q: any, index: number) => ({
+                    examId,
+                    content: q.content,
+                    optionA: q.optionA,
+                    optionB: q.optionB,
+                    optionC: q.optionC,
+                    optionD: q.optionD,
+                    correctAnswer: q.correctAnswer,
+                    points: q.points ?? 1,
+                    order: startOrder + index,
+                })),
+            });
+
+            // Update exam pdfUrl if provided
+            if (pdfUrl) {
+                await tx.exam.update({
+                    where: { id: examId },
+                    data: { pdfUrl },
+                });
+            }
+
+            return created;
         });
 
         return NextResponse.json({
             success: true,
-            count: createdQuestions.count,
+            count: result.count,
         });
+
     } catch (error) {
         console.error('Error creating questions:', error);
         return NextResponse.json(
