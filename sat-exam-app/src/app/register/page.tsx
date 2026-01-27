@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { User, Mail, Lock, Loader2, GraduationCap, School } from 'lucide-react';
+import { User, Mail, Lock, Loader2, GraduationCap, School, Shield, ArrowRight } from 'lucide-react';
 
 export default function RegisterPage() {
     const [formData, setFormData] = useState({
@@ -44,91 +44,97 @@ export default function RegisterPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-[#0f172a] overflow-hidden relative">
-            {/* Background blobs */}
-            <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-600/20 blur-[120px] rounded-full animate-pulse"></div>
-            <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-600/20 blur-[120px] rounded-full animate-pulse delay-700"></div>
+        <div className="min-h-screen flex items-center justify-center bg-background bg-blueprint bg-noise p-6 py-20">
+            <div className="w-full max-w-[540px] z-10">
+                {/* Branding above card */}
+                <div className="flex items-center justify-center gap-3 mb-10">
+                    <div className="w-10 h-10 bg-cb-blue text-cb-yellow flex items-center justify-center border-2 border-cb-blue shadow-[3px_3px_0px_#fddb00]">
+                        <Shield size={22} fill="currentColor" fillOpacity={0.2} />
+                    </div>
+                    <span className="text-3xl font-black tracking-tighter text-cb-blue dark:text-cb-yellow uppercase italic">SAT EXAM</span>
+                </div>
 
-            <div className="w-full max-w-lg p-8 z-10">
-                <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl">
-                    <div className="text-center mb-8">
-                        <h1 className="text-4xl font-bold text-white mb-2 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                            Tạo Tài Khoản
-                        </h1>
-                        <p className="text-slate-400">Tham gia hệ thống thi trực tuyến SAT</p>
+                <div className="bg-white dark:bg-cb-blue-950 border-4 border-cb-blue shadow-academic-bold p-10 relative overflow-hidden">
+                    {/* Top Accent Line */}
+                    <div className="absolute top-0 left-0 w-full h-2 bg-cb-yellow" />
+
+                    <div className="mb-10 text-center">
+                        <h1 className="text-2xl font-black italic uppercase text-cb-blue dark:text-cb-yellow tracking-tight">Tạo Tài Khoản</h1>
+                        <p className="text-[10px] font-bold tracking-[0.2em] text-slate-400 uppercase mt-2 italic">Tham gia hệ thống thi trực tuyến SAT</p>
                     </div>
 
-                    <form onSubmit={handleSubmit} className="space-y-5">
-                        <div className="grid grid-cols-2 gap-4 mb-6">
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        {/* Role Selection */}
+                        <div className="grid grid-cols-2 gap-4 mb-8">
                             <button
                                 type="button"
                                 onClick={() => setFormData({ ...formData, role: 'STUDENT' })}
-                                className={`flex flex-col items-center justify-center p-4 rounded-2xl border transition-all ${formData.role === 'STUDENT'
-                                        ? 'bg-blue-600/20 border-blue-500 text-white'
-                                        : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10'
+                                className={`flex flex-col items-center justify-center p-6 border-2 transition-all group ${formData.role === 'STUDENT'
+                                    ? 'bg-cb-blue border-cb-blue text-white shadow-[4px_4px_0px_#fddb00]'
+                                    : 'bg-white border-cb-blue/10 text-cb-blue hover:border-cb-blue'
                                     }`}
                             >
-                                <GraduationCap className="mb-2" size={24} />
-                                <span className="text-sm font-medium">Học Sinh</span>
+                                <GraduationCap className={`mb-3 ${formData.role === 'STUDENT' ? 'text-cb-yellow' : 'text-cb-blue/40'}`} size={28} />
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em]">Học Sinh</span>
                             </button>
                             <button
                                 type="button"
                                 onClick={() => setFormData({ ...formData, role: 'TEACHER' })}
-                                className={`flex flex-col items-center justify-center p-4 rounded-2xl border transition-all ${formData.role === 'TEACHER'
-                                        ? 'bg-purple-600/20 border-purple-500 text-white'
-                                        : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10'
+                                className={`flex flex-col items-center justify-center p-6 border-2 transition-all group ${formData.role === 'TEACHER'
+                                    ? 'bg-cb-blue border-cb-blue text-white shadow-[4px_4px_0px_#fddb00]'
+                                    : 'bg-white border-cb-blue/10 text-cb-blue hover:border-cb-blue'
                                     }`}
                             >
-                                <School className="mb-2" size={24} />
-                                <span className="text-sm font-medium">Giáo Viên</span>
+                                <School className={`mb-3 ${formData.role === 'TEACHER' ? 'text-cb-yellow' : 'text-cb-blue/40'}`} size={28} />
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em]">Giáo Viên</span>
                             </button>
                         </div>
 
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-slate-300 ml-1">Họ và tên</label>
+                        <div className="space-y-3">
+                            <label className="text-xs font-black uppercase tracking-widest text-cb-blue dark:text-cb-yellow">Họ và tên</label>
                             <div className="relative group">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500 group-focus-within:text-blue-400 transition-colors">
+                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-cb-blue/30 group-focus-within:text-cb-blue transition-colors">
                                     <User size={18} />
                                 </div>
                                 <input
                                     type="text"
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    className="block w-full pl-10 pr-3 py-3 bg-white/5 border border-white/10 rounded-2xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
+                                    className="block w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-cb-blue-900/10 border-2 border-cb-blue/20 dark:border-cb-yellow/20 text-cb-blue dark:text-white placeholder-slate-400 focus:outline-none focus:border-cb-blue dark:focus:border-cb-yellow transition-all font-medium"
                                     placeholder="Nguyễn Văn A"
                                     required
                                 />
                             </div>
                         </div>
 
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-slate-300 ml-1">Email</label>
+                        <div className="space-y-3">
+                            <label className="text-xs font-black uppercase tracking-widest text-cb-blue dark:text-cb-yellow">Email</label>
                             <div className="relative group">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500 group-focus-within:text-blue-400 transition-colors">
+                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-cb-blue/30 group-focus-within:text-cb-blue transition-colors">
                                     <Mail size={18} />
                                 </div>
                                 <input
                                     type="email"
                                     value={formData.email}
                                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                    className="block w-full pl-10 pr-3 py-3 bg-white/5 border border-white/10 rounded-2xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
+                                    className="block w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-cb-blue-900/10 border-2 border-cb-blue/20 dark:border-cb-yellow/20 text-cb-blue dark:text-white placeholder-slate-400 focus:outline-none focus:border-cb-blue dark:focus:border-cb-yellow transition-all font-medium"
                                     placeholder="name@example.com"
                                     required
                                 />
                             </div>
                         </div>
 
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-slate-300 ml-1">Mật khẩu</label>
+                        <div className="space-y-3">
+                            <label className="text-xs font-black uppercase tracking-widest text-cb-blue dark:text-cb-yellow">Mật khẩu</label>
                             <div className="relative group">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500 group-focus-within:text-blue-400 transition-colors">
+                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-cb-blue/30 group-focus-within:text-cb-blue transition-colors">
                                     <Lock size={18} />
                                 </div>
                                 <input
                                     type="password"
                                     value={formData.password}
                                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                                    className="block w-full pl-10 pr-3 py-3 bg-white/5 border border-white/10 rounded-2xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
+                                    className="block w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-cb-blue-900/10 border-2 border-cb-blue/20 dark:border-cb-yellow/20 text-cb-blue dark:text-white placeholder-slate-400 focus:outline-none focus:border-cb-blue dark:focus:border-cb-yellow transition-all font-medium"
                                     placeholder="••••••••"
                                     required
                                 />
@@ -136,32 +142,40 @@ export default function RegisterPage() {
                         </div>
 
                         {error && (
-                            <div className="bg-red-500/10 border border-red-500/20 text-red-400 text-sm py-2 px-4 rounded-xl">
-                                {error}
+                            <div className="bg-red-50 dark:bg-red-950/20 border-l-4 border-red-500 text-red-600 dark:text-red-400 text-xs font-bold py-3 px-4 uppercase tracking-wider italic">
+                                [LỖI]: {error}
                             </div>
                         )}
 
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="w-full py-4 px-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-semibold rounded-2xl shadow-lg shadow-blue-500/25 transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                            className="w-full btn-cb-primary py-4 flex items-center justify-center gap-3 relative group mt-4"
                         >
                             {isLoading ? (
                                 <Loader2 className="animate-spin" size={20} />
                             ) : (
-                                <>Đăng Ký Tài Khoản</>
+                                <>
+                                    <span>Đăng Ký Tài Khoản</span>
+                                    <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                                </>
                             )}
                         </button>
                     </form>
 
-                    <div className="mt-8 text-center">
-                        <p className="text-slate-400 text-sm">
-                            Đã có tài khoản?{' '}
-                            <Link href="/login" className="text-blue-400 hover:text-blue-300 font-medium transition-colors">
+                    <div className="mt-12 pt-8 border-t-2 border-cb-blue/10 dark:border-cb-yellow/10 text-center">
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                            Đã có tài khoản?{' '} <br />
+                            <Link href="/login" className="text-cb-blue dark:text-cb-yellow hover:underline decoration-2 underline-offset-4 decoration-cb-yellow mt-2 inline-block">
                                 Đăng nhập ngay
                             </Link>
                         </p>
                     </div>
+                </div>
+
+                {/* Extra Footer Decoration */}
+                <div className="mt-8 text-center opacity-30 select-none">
+                    <div className="text-[8px] font-black tracking-[0.5em] text-cb-blue uppercase underline decoration-1">SECURE REGISTRATION PROTOCOL V1.4</div>
                 </div>
             </div>
         </div>
