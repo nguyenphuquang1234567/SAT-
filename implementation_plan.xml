@@ -98,15 +98,24 @@
             </task>
             
             <task id="2.4">
-                <name>Question Management</name>
+                <name>Question Management với PDF Upload</name>
                 <subtasks>
-                    <subtask>Form thêm câu hỏi trắc nghiệm (4 đáp án A-D)</subtask>
-                    <subtask>Chỉnh sửa câu hỏi đã tạo</subtask>
+                    <subtask priority="high">Upload file PDF đề thi từ giáo viên</subtask>
+                    <subtask priority="high">AI tự động parse PDF và trích xuất các câu hỏi trắc nghiệm</subtask>
+                    <subtask priority="high">Hiển thị kết quả parse để giáo viên review và chỉnh sửa</subtask>
+                    <subtask>Form thêm câu hỏi trắc nghiệm thủ công (4 đáp án A-D)</subtask>
+                    <subtask>Chỉnh sửa câu hỏi đã parse hoặc đã tạo</subtask>
                     <subtask>Xóa câu hỏi</subtask>
-                    <subtask>Sắp xếp thứ tự câu hỏi</subtask>
-                    <subtask>Import câu hỏi từ file CSV/Excel (optional)</subtask>
+                    <subtask>Sắp xếp thứ tự câu hỏi (drag-and-drop)</subtask>
                     <subtask>Preview bài thi trước khi publish</subtask>
                 </subtasks>
+                <technical_approach>
+                    <method>Sử dụng pdf-parse hoặc pdfjs-dist để đọc nội dung PDF</method>
+                    <method>Gửi text đã extract lên AI API (Google Gemini / OpenAI GPT)</method>
+                    <method>AI parse ra format JSON: [{question, optionA, optionB, optionC, optionD, correctAnswer}]</method>
+                    <method>Lưu file PDF lên Supabase Storage hoặc Vercel Blob</method>
+                    <method>Giáo viên review, chỉnh sửa lại nếu AI parse sai trước khi confirm lưu</method>
+                </technical_approach>
             </task>
             
             <task id="2.5">
@@ -358,6 +367,13 @@
             <technology name="JWT">Token-based auth</technology>
         </backend>
         
+        <ai_services>
+            <technology name="Google Gemini API">AI để parse câu hỏi từ PDF (option 1)</technology>
+            <technology name="OpenAI GPT API">AI để parse câu hỏi từ PDF (option 2)</technology>
+            <technology name="pdf-parse / pdfjs-dist">Thư viện đọc nội dung PDF</technology>
+            <technology name="Supabase Storage / Vercel Blob">Lưu trữ file PDF</technology>
+        </ai_services>
+        
         <security>
             <technology name="Fullscreen API">Lock mode</technology>
             <technology name="Page Visibility API">Tab detection</technology>
@@ -387,7 +403,9 @@
         <description>Nếu cần ra MVP nhanh, focus vào các features sau:</description>
         <must_have>
             <feature>Login cho Teacher/Student</feature>
-            <feature>Teacher tạo bài thi và câu hỏi</feature>
+            <feature>Teacher upload PDF đề thi và AI tự động parse câu hỏi</feature>
+            <feature>Teacher review và chỉnh sửa câu hỏi sau khi parse</feature>
+            <feature>Teacher tạo bài thi và gán cho lớp</feature>
             <feature>Student làm bài thi</feature>
             <feature>Fullscreen lock mode</feature>
             <feature>Copy/Paste prevention</feature>
@@ -395,8 +413,8 @@
             <feature>Auto-grading</feature>
         </must_have>
         <nice_to_have>
-            <feature>Import questions từ file</feature>
-            <feature>Export results</feature>
+            <feature>Thêm câu hỏi thủ công (ngoài PDF)</feature>
+            <feature>Export results ra Excel</feature>
             <feature>Question randomization</feature>
             <feature>Dark mode</feature>
             <feature>Advanced analytics</feature>

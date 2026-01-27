@@ -11,7 +11,18 @@ export async function proxy(req: NextRequest) {
         return NextResponse.redirect(new URL('/', req.url));
     }
 
-    // 2. Nếu chưa đăng nhập mà vào các trang yêu cầu auth -> redirect về login
+    // 2. Role-based protection (Logic merged from middleware.ts)
+    if (pathname.startsWith("/teacher")) {
+        if (!token) return NextResponse.redirect(new URL('/login', req.url));
+        if (token.role !== "TEACHER") return NextResponse.redirect(new URL('/', req.url));
+    }
+
+    if (pathname.startsWith("/student")) {
+        if (!token) return NextResponse.redirect(new URL('/login', req.url));
+        if (token.role !== "STUDENT") return NextResponse.redirect(new URL('/', req.url));
+    }
+
+    // 3. Nếu chưa đăng nhập mà vào các trang yêu cầu auth -> redirect về login
     // Cho phép access vào login, register và api routes
     if (!token &&
         pathname !== '/login' &&
@@ -30,3 +41,5 @@ export async function proxy(req: NextRequest) {
 export const config = {
     matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
 };
+
+export default proxy;
