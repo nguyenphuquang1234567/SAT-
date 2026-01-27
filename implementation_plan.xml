@@ -113,7 +113,7 @@
                     <method>Sử dụng pdf-parse hoặc pdfjs-dist để đọc nội dung PDF</method>
                     <method>Gửi text đã extract lên AI API (Google Gemini / OpenAI GPT)</method>
                     <method>AI parse ra format JSON: [{question, optionA, optionB, optionC, optionD, correctAnswer}]</method>
-                    <method>Lưu file PDF lên Supabase Storage hoặc Vercel Blob</method>
+                    <method>Lưu file PDF lên Supabase Storage</method>
                     <method>Giáo viên review, chỉnh sửa lại nếu AI parse sai trước khi confirm lưu</method>
                 </technical_approach>
             </task>
