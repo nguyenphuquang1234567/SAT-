@@ -3,7 +3,8 @@
 import { use, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ChevronLeft, Edit, Clock, Calendar, CheckCircle, FileText, Settings, Trash2 } from 'lucide-react';
+import { ChevronLeft, Edit, Clock, Calendar, CheckCircle, FileText, Settings, Trash2, ChartBar } from 'lucide-react';
+
 
 interface Question {
     id: string;
@@ -191,7 +192,15 @@ export default function ExamDetailPage({ params }: { params: Promise<{ id: strin
 
                 {/* Publish Actions */}
                 <div className="bg-cb-blue dark:bg-cb-yellow/10 p-6 text-white shadow-academic-bold h-fit">
+                    <Link
+                        href={`/teacher/exams/${id}/results`}
+                        className="w-full bg-white text-cb-blue hover:bg-gray-100 py-3 mb-6 font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 shadow-lg"
+                    >
+                        <ChartBar size={16} /> Xem Kết Quả & Thống Kê
+                    </Link>
+
                     <h3 className="text-lg font-black italic uppercase mb-4 border-b border-white/20 pb-2">Trạng Thái</h3>
+
 
                     <div className="space-y-4">
                         {exam.status === 'DRAFT' && (

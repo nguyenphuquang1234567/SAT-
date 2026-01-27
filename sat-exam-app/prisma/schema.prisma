@@ -58,14 +58,13 @@ model Exam {
   duration         Int
   startTime        DateTime?
   endTime          DateTime?
-  pdfUrl           String?
   classId          String
-
   shuffleQuestions Boolean       @default(true)
   shuffleAnswers   Boolean       @default(true)
   maxViolations    Int           @default(3)
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
+  pdfUrl           String?
   class            Class         @relation(fields: [classId], references: [id], onDelete: Cascade)
   questions        Question[]
   studentExams     StudentExam[]
@@ -84,6 +83,8 @@ model Question {
   correctAnswer  String
   points         Int             @default(1)
   order          Int
+  section        String?         // Added section (e.g., Reading & Writing, Math)
+  rawNumber      Int?            // Added original number in that section (e.g., 1, 2, 3)
   exam           Exam            @relation(fields: [examId], references: [id], onDelete: Cascade)
   studentAnswers StudentAnswer[]
 
@@ -100,6 +101,7 @@ model StudentExam {
   maxScore       Float?
   status         StudentExamStatus @default(NOT_STARTED)
   violationCount Int               @default(0)
+  timeSpent      Int               @default(0) // Accumulated time in seconds
   createdAt      DateTime          @default(now())
   updatedAt      DateTime          @updatedAt
   answers        StudentAnswer[]
@@ -117,6 +119,7 @@ model StudentAnswer {
   questionId     String
   selectedAnswer String?
   isCorrect      Boolean?
+  isFlagged      Boolean     @default(false)
   question       Question    @relation(fields: [questionId], references: [id], onDelete: Cascade)
   studentExam    StudentExam @relation(fields: [studentExamId], references: [id], onDelete: Cascade)
 

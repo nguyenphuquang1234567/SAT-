@@ -160,7 +160,7 @@
                 <name>Exam Taking Interface</name>
                 <subtasks>
                     <subtask>Trang waiting room trước khi bắt đầu thi</subtask>
-                    <subtask>Hiển thị đề thi với các câu hỏi</subtask>
+                    <subtask>Hiển thị đề thi (cụ thể là PDF) với các câu hỏi</subtask>
                     <subtask>Navigation giữa các câu hỏi</subtask>
                     <subtask>Đánh dấu câu hỏi để review</subtask>
                     <subtask>Countdown timer hiển thị thời gian còn lại</subtask>

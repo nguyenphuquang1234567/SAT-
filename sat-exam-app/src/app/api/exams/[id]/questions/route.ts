@@ -117,6 +117,8 @@ export async function POST(
                     correctAnswer: q.correctAnswer,
                     points: q.points ?? 1,
                     order: startOrder + index,
+                    section: q.section, // Added
+                    rawNumber: q.rawNumber, // Added
                 })),
             });
 
