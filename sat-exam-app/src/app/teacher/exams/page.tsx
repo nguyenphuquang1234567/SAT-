@@ -64,23 +64,6 @@ export default function ExamsManagementPage() {
                 </Link>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-                {/* PDF Upload Card (Placeholder for feature) */}
-                <div className="bg-cb-blue dark:bg-cb-yellow p-8 shadow-academic-bold relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full translate-x-20 translate-y-[-20%]"></div>
-
-                    <h2 className="text-2xl font-black italic text-white dark:text-cb-blue uppercase mb-2 relative z-10">
-                        Tạo đề bằng AI (Coming Soon)
-                    </h2>
-                    <p className="text-white/80 dark:text-cb-blue/80 font-medium max-w-lg mb-6 relative z-10">
-                        Upload file PDF đề thi của bạn, hệ thống sẽ tự động trích xuất câu hỏi và tạo đề thi online trong vài giây.
-                    </p>
-
-                    <button className="bg-white text-cb-blue dark:bg-cb-blue dark:text-white px-6 py-3 font-black uppercase tracking-widest text-sm flex items-center gap-2 shadow-lg relative z-10 group-hover:scale-105 transition-transform">
-                        <Upload size={18} /> Upload PDF Ngay
-                    </button>
-                </div>
-            </div>
 
             {loading ? (
                 <div className="text-center p-10 font-bold text-slate-400">Loading data...</div>

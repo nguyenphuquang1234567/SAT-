@@ -101,8 +101,8 @@ export default function ExamDetailPage({ params }: { params: Promise<{ id: strin
                             {exam.title}
                         </h1>
                         <span className={`px-3 py-1 text-xs font-black uppercase tracking-widest border ${exam.status === 'PUBLISHED' ? 'bg-green-100 text-green-600 border-green-200' :
-                                exam.status === 'ACTIVE' ? 'bg-blue-100 text-blue-600 border-blue-200' :
-                                    'bg-slate-100 text-slate-500 border-slate-200'
+                            exam.status === 'ACTIVE' ? 'bg-blue-100 text-blue-600 border-blue-200' :
+                                'bg-slate-100 text-slate-500 border-slate-200'
                             }`}>
                             {exam.status}
                         </span>
@@ -159,19 +159,21 @@ export default function ExamDetailPage({ params }: { params: Promise<{ id: strin
                 <div className="lg:col-span-2 bg-white dark:bg-cb-blue-900 border-4 border-slate-200 dark:border-cb-blue-800 p-8 shadow-academic">
                     <div className="flex justify-between items-center mb-6 pb-4 border-b border-slate-100 dark:border-white/10">
                         <h3 className="text-lg font-black italic uppercase text-cb-blue dark:text-white">Danh sách câu hỏi</h3>
-                        <Link href={`/teacher/exams/${id}/edit`} className="text-xs font-bold text-cb-blue dark:text-cb-yellow uppercase tracking-widest hover:underline">
-                            + Chỉnh sửa câu hỏi
+                        <Link href={`/teacher/exams/${id}/questions`} className="text-xs font-bold text-cb-blue dark:text-cb-yellow uppercase tracking-widest hover:underline">
+                            + Quản lý câu hỏi
                         </Link>
                     </div>
 
                     {exam.questions.length === 0 ? (
                         <div className="text-center py-10 text-slate-400">
                             <p className="italic mb-4">Chưa có câu hỏi nào trong đề thi này.</p>
-                            <button className="bg-cb-blue dark:bg-cb-yellow text-white dark:text-cb-blue px-6 py-2 font-bold text-xs uppercase tracking-widest hover:opacity-90">
-                                Thêm câu hỏi thủ công
-                            </button>
+                            <Link href={`/teacher/exams/${id}/questions/new`}>
+                                <button className="bg-cb-blue dark:bg-cb-yellow text-white dark:text-cb-blue px-6 py-2 font-bold text-xs uppercase tracking-widest hover:opacity-90">
+                                    Thêm câu hỏi thủ công
+                                </button>
+                            </Link>
                             <p className="my-2 text-xs font-bold uppercase">-- Hoặc --</p>
-                            <Link href="/teacher/exams/upload" className="inline-block text-cb-blue dark:text-cb-yellow font-black uppercase text-xs hover:underline">
+                            <Link href={`/teacher/exams/${id}/questions`} className="inline-block text-cb-blue dark:text-cb-yellow font-black uppercase text-xs hover:underline">
                                 Upload PDF (AI Parse)
                             </Link>
                         </div>

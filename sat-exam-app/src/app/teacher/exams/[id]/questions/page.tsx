@@ -60,7 +60,7 @@ export default function QuestionsPage({
                 if (!examRes.ok) throw new Error('Exam not found');
 
                 const examData = await examRes.json();
-                setExam(examData.exam);
+                setExam(examData);
 
                 if (questionsRes.ok) {
                     const questionsData = await questionsRes.json();

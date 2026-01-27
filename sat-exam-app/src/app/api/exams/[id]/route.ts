@@ -36,6 +36,7 @@ export async function GET(
         });
 
         if (!classCheck) {
+            console.log("[DEBUG] Unauthorized Access - Not class owner", { classId: exam.classId, teacherId: session.user.id });
             return new NextResponse("Unauthorized Access", { status: 403 });
         }
 

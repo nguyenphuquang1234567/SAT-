@@ -6,8 +6,8 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY!;
 // Service role client - for server-side operations (uploads, admin tasks)
 export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
 
-// Bucket name for exam PDFs
-export const EXAM_PDF_BUCKET = 'exam-pdfs';
+// Bucket name for exam PDFs (matching user's bucket name)
+export const EXAM_PDF_BUCKET = 'exam pdfs';
 
 /**
  * Upload a PDF file to Supabase Storage

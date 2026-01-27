@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider   = "prisma-client-js"
   engineType = "library"
@@ -10,7 +7,132 @@ datasource db {
   provider = "postgresql"
 }
 
-// ==================== ENUMS ====================
+model User {
+  id             String         @id @default(cuid())
+  email          String         @unique
+  password       String
+  name           String
+  role           UserRole
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  studentClasses ClassStudent[]
+  teacherClasses Class[]        @relation("TeacherClasses")
+  studentExams   StudentExam[]
+
+  @@map("users")
+}
+
+model Class {
+  id          String         @id @default(cuid())
+  name        String
+  description String?
+  code        String         @unique
+  teacherId   String
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  students    ClassStudent[]
+  teacher     User           @relation("TeacherClasses", fields: [teacherId], references: [id], onDelete: Cascade)
+  exams       Exam[]
+
+  @@map("classes")
+}
+
+model ClassStudent {
+  id        String   @id @default(cuid())
+  classId   String
+  studentId String
+  joinedAt  DateTime @default(now())
+  class     Class    @relation(fields: [classId], references: [id], onDelete: Cascade)
+  student   User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([classId, studentId])
+  @@map("class_students")
+}
+
+model Exam {
+  id               String        @id @default(cuid())
+  title            String
+  description      String?
+  type             ExamType
+  status           ExamStatus    @default(DRAFT)
+  duration         Int
+  startTime        DateTime?
+  endTime          DateTime?
+  classId          String
+  shuffleQuestions Boolean       @default(true)
+  shuffleAnswers   Boolean       @default(true)
+  maxViolations    Int           @default(3)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  class            Class         @relation(fields: [classId], references: [id], onDelete: Cascade)
+  questions        Question[]
+  studentExams     StudentExam[]
+
+  @@map("exams")
+}
+
+model Question {
+  id             String          @id @default(cuid())
+  examId         String
+  content        String
+  optionA        String
+  optionB        String
+  optionC        String
+  optionD        String
+  correctAnswer  String
+  points         Int             @default(1)
+  order          Int
+  exam           Exam            @relation(fields: [examId], references: [id], onDelete: Cascade)
+  studentAnswers StudentAnswer[]
+
+  @@map("questions")
+}
+
+model StudentExam {
+  id             String            @id @default(cuid())
+  studentId      String
+  examId         String
+  startedAt      DateTime?
+  submittedAt    DateTime?
+  score          Float?
+  maxScore       Float?
+  status         StudentExamStatus @default(NOT_STARTED)
+  violationCount Int               @default(0)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  answers        StudentAnswer[]
+  exam           Exam              @relation(fields: [examId], references: [id], onDelete: Cascade)
+  student        User              @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  violations     Violation[]
+
+  @@unique([studentId, examId])
+  @@map("student_exams")
+}
+
+model StudentAnswer {
+  id             String      @id @default(cuid())
+  studentExamId  String
+  questionId     String
+  selectedAnswer String?
+  isCorrect      Boolean?
+  question       Question    @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  studentExam    StudentExam @relation(fields: [studentExamId], references: [id], onDelete: Cascade)
+
+  @@unique([studentExamId, questionId])
+  @@map("student_answers")
+}
+
+model Violation {
+  id            String      @id @default(cuid())
+  studentExamId String
+  type          String
+  description   String?
+  timestamp     DateTime    @default(now())
+  studentExam   StudentExam @relation(fields: [studentExamId], references: [id], onDelete: Cascade)
+
+  @@map("violations")
+}
+
 enum UserRole {
   TEACHER
   STUDENT
@@ -34,152 +156,4 @@ enum StudentExamStatus {
   IN_PROGRESS
   SUBMITTED
   GRADED
-}
-
-// ==================== MODELS ====================
-
-model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  password  String
-  name      String
-  role      UserRole
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relations
-  teacherClasses Class[]       @relation("TeacherClasses")
-  studentClasses ClassStudent[]
-  studentExams   StudentExam[]
-
-  @@map("users")
-}
-
-model Class {
-  id          String   @id @default(cuid())
-  name        String
-  description String?
-  code        String   @unique // Mã lớp để học sinh join
-  teacherId   String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Relations
-  teacher  User           @relation("TeacherClasses", fields: [teacherId], references: [id], onDelete: Cascade)
-  students ClassStudent[]
-  exams    Exam[]
-
-  @@map("classes")
-}
-
-model ClassStudent {
-  id        String   @id @default(cuid())
-  classId   String
-  studentId String
-  joinedAt  DateTime @default(now())
-
-  // Relations
-  class   Class @relation(fields: [classId], references: [id], onDelete: Cascade)
-  student User  @relation(fields: [studentId], references: [id], onDelete: Cascade)
-
-  @@unique([classId, studentId])
-  @@map("class_students")
-}
-
-model Exam {
-  id          String     @id @default(cuid())
-  title       String
-  description String?
-  type        ExamType
-  status      ExamStatus @default(DRAFT)
-  duration    Int        // Duration in minutes
-  startTime   DateTime?  // Thời gian bắt đầu thi
-  endTime     DateTime?  // Thời gian kết thúc thi
-  classId     String
-  
-  // Security settings
-  shuffleQuestions Boolean @default(true)
-  shuffleAnswers   Boolean @default(true)
-  maxViolations    Int     @default(3) // Số lần vi phạm tối đa
-  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relations
-  class        Class         @relation(fields: [classId], references: [id], onDelete: Cascade)
-  questions    Question[]
-  studentExams StudentExam[]
-
-  @@map("exams")
-}
-
-model Question {
-  id            String  @id @default(cuid())
-  examId        String
-  content       String  @db.Text
-  optionA       String
-  optionB       String
-  optionC       String
-  optionD       String
-  correctAnswer String  // A, B, C, or D
-  points        Int     @default(1)
-  order         Int
-
-  // Relations
-  exam           Exam            @relation(fields: [examId], references: [id], onDelete: Cascade)
-  studentAnswers StudentAnswer[]
-
-  @@map("questions")
-}
-
-model StudentExam {
-  id            String            @id @default(cuid())
-  studentId     String
-  examId        String
-  startedAt     DateTime?
-  submittedAt   DateTime?
-  score         Float?
-  maxScore      Float?
-  status        StudentExamStatus @default(NOT_STARTED)
-  violationCount Int              @default(0)
-  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relations
-  student    User            @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  exam       Exam            @relation(fields: [examId], references: [id], onDelete: Cascade)
-  answers    StudentAnswer[]
-  violations Violation[]
-
-  @@unique([studentId, examId])
-  @@map("student_exams")
-}
-
-model StudentAnswer {
-  id             String  @id @default(cuid())
-  studentExamId  String
-  questionId     String
-  selectedAnswer String? // A, B, C, D or null
-  isCorrect      Boolean?
-
-  // Relations
-  studentExam StudentExam @relation(fields: [studentExamId], references: [id], onDelete: Cascade)
-  question    Question    @relation(fields: [questionId], references: [id], onDelete: Cascade)
-
-  @@unique([studentExamId, questionId])
-  @@map("student_answers")
-}
-
-model Violation {
-  id            String   @id @default(cuid())
-  studentExamId String
-  type          String   // FULLSCREEN_EXIT, TAB_SWITCH, COPY_ATTEMPT, PASTE_ATTEMPT, etc.
-  description   String?
-  timestamp     DateTime @default(now())
-
-  // Relations
-  studentExam StudentExam @relation(fields: [studentExamId], references: [id], onDelete: Cascade)
-
-  @@map("violations")
 }

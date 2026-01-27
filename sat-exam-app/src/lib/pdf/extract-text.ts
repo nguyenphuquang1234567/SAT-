@@ -1,13 +1,9 @@
 /**
- * PDF Text Extraction using pdfjs-dist
- * Works in Node.js environment (Next.js API routes)
+ * PDF Text Extraction using unpdf
+ * Optimized for Node.js/Next.js server environment
  */
 
-import * as pdfjsLib from 'pdfjs-dist';
-
-// Set worker source for pdfjs
-// @ts-expect-error - pdfjs types don't perfectly match
-pdfjsLib.GlobalWorkerOptions.workerSrc = false; // Disable worker for Node.js
+import { extractText } from 'unpdf';
 
 interface ExtractResult {
     text: string;
@@ -23,41 +19,18 @@ export async function extractTextFromPdf(
     pdfBuffer: Buffer
 ): Promise<ExtractResult> {
     try {
-        // Convert Buffer to Uint8Array for pdfjs
+        // Convert Buffer to Uint8Array
         const uint8Array = new Uint8Array(pdfBuffer);
 
-        // Load the PDF document
-        const loadingTask = pdfjsLib.getDocument({
-            data: uint8Array,
-            useSystemFonts: true,
-        });
+        // Extract text using unpdf
+        const { text, totalPages } = await extractText(uint8Array);
 
-        const pdfDocument = await loadingTask.promise;
-        const pageCount = pdfDocument.numPages;
-
-        let fullText = '';
-
-        // Extract text from each page
-        for (let pageNum = 1; pageNum <= pageCount; pageNum++) {
-            const page = await pdfDocument.getPage(pageNum);
-            const textContent = await page.getTextContent();
-
-            // Combine text items with proper spacing
-            const pageText = textContent.items
-                .map((item) => {
-                    if ('str' in item) {
-                        return item.str;
-                    }
-                    return '';
-                })
-                .join(' ');
-
-            fullText += pageText + '\n\n';
-        }
+        // text is an array of strings (one per page), join them
+        const fullText = Array.isArray(text) ? text.join('\n\n') : String(text);
 
         return {
             text: fullText.trim(),
-            pageCount,
+            pageCount: totalPages,
         };
     } catch (error) {
         console.error('Error extracting text from PDF:', error);

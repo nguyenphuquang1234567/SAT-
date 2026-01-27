@@ -62,7 +62,8 @@ export async function parseQuestionsFromText(
                 },
             ],
             temperature: 0.1, // Low temperature for consistent structured output
-            max_tokens: 4000,
+            max_tokens: 16000, // Increased for longer exams
+            response_format: { type: 'json_object' }, // Force JSON output
         });
 
         const content = response.choices[0]?.message?.content;
@@ -73,26 +74,41 @@ export async function parseQuestionsFromText(
 
         // Clean the response - remove markdown code blocks if present
         let cleanedContent = content.trim();
-        if (cleanedContent.startsWith('```json')) {
-            cleanedContent = cleanedContent.slice(7);
-        } else if (cleanedContent.startsWith('```')) {
-            cleanedContent = cleanedContent.slice(3);
-        }
-        if (cleanedContent.endsWith('```')) {
-            cleanedContent = cleanedContent.slice(0, -3);
-        }
+
+        // Remove markdown code blocks
+        cleanedContent = cleanedContent.replace(/^```json\s*/i, '');
+        cleanedContent = cleanedContent.replace(/^```\s*/i, '');
+        cleanedContent = cleanedContent.replace(/\s*```$/i, '');
         cleanedContent = cleanedContent.trim();
 
-        const parsed = JSON.parse(cleanedContent);
+        let parsed;
+        try {
+            parsed = JSON.parse(cleanedContent);
+        } catch (jsonError) {
+            console.error('JSON parse error, attempting to fix...', jsonError);
+            // Try to extract JSON array from response
+            const arrayMatch = cleanedContent.match(/\[[\s\S]*\]/);
+            if (arrayMatch) {
+                parsed = JSON.parse(arrayMatch[0]);
+            } else {
+                throw jsonError;
+            }
+        }
 
-        // Validate the structure
+        // Handle both array and object with questions field
+        let questionsArray = parsed;
         if (!Array.isArray(parsed)) {
-            console.error('OpenAI response is not an array');
-            return [];
+            // If it's an object with a 'questions' field, use that
+            if (parsed.questions && Array.isArray(parsed.questions)) {
+                questionsArray = parsed.questions;
+            } else {
+                console.error('OpenAI response is not an array and has no questions field');
+                return [];
+            }
         }
 
         // Validate each question
-        const validQuestions: ParsedQuestion[] = parsed.filter((q) => {
+        const validQuestions: ParsedQuestion[] = questionsArray.filter((q: any) => {
             return (
                 q.content &&
                 q.optionA &&
