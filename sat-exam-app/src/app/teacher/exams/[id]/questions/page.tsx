@@ -224,7 +224,7 @@ export default function QuestionsPage({
         );
     }
 
-    const totalQuestions = savedQuestions.length + parsedQuestions.length;
+    const totalQuestions = (savedQuestions?.length || 0) + (parsedQuestions?.length || 0);
     const isDraft = exam.status === 'DRAFT';
 
     return (

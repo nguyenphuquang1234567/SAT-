@@ -2,9 +2,22 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { extractTextFromPdf } from '@/lib/pdf/extract-text';
-import { parseQuestionsFromText } from '@/lib/ai/parse-questions';
 import { uploadExamPdf } from '@/lib/supabase';
+
+interface ParsedQuestion {
+    content: string;
+    optionA: string;
+    optionB: string;
+    optionC: string;
+    optionD: string;
+    correctAnswer: string; // Changed from 'A' | 'B' | 'C' | 'D' to string to support grid-ins
+    points: number;
+    order: number;
+    metadata?: {
+        extractionMethod: string;
+        pdfUrl: string | null;
+    };
+}
 
 export async function POST(
     request: NextRequest,
@@ -54,43 +67,53 @@ export async function POST(
         const arrayBuffer = await file.arrayBuffer();
         const buffer = Buffer.from(arrayBuffer);
 
-        // Upload to Supabase Storage (optional - for record keeping)
+        // Upload PDF to Supabase Storage (optional)
         let pdfUrl: string | null = null;
         try {
             const uploadResult = await uploadExamPdf(buffer, examId, file.name);
             pdfUrl = uploadResult.url;
         } catch (uploadError) {
             console.warn('PDF upload to storage failed, continuing with parse:', uploadError);
-            // Continue without storage - parsing is more important
         }
 
-        // Extract text from PDF
-        const { text, pageCount } = await extractTextFromPdf(buffer);
+        // Parse PDF to extract question numbers and correct answers
+        console.log('Parsing PDF for questions and answers...');
+        const { parsePdfQuestions, generateAnswerKeyMarkdown } = await import('@/lib/pdf/parse-simple');
+        const parsedQuestions = await parsePdfQuestions(buffer);
+        const markdownPreview = generateAnswerKeyMarkdown(parsedQuestions);
 
-        if (!text.trim()) {
-            return NextResponse.json(
-                { error: 'No text could be extracted from PDF' },
-                { status: 400 }
-            );
-        }
+        console.log(`Found ${parsedQuestions.length} questions`);
 
-        // Parse questions using AI
-        const questions = await parseQuestionsFromText(text);
+        // Create simple question entries
+        const allQuestions = parsedQuestions.map((q) => ({
+            content: `[${q.section} Q${q.rawNumber}]`,
+            optionA: 'A',
+            optionB: 'B',
+            optionC: 'C',
+            optionD: 'D',
+            correctAnswer: q.correctAnswer,
+            points: 1,
+            order: q.questionNumber,
+            rawNumber: q.rawNumber,
+            section: q.section,
+        }));
+
 
         return NextResponse.json({
             success: true,
-            questions,
-            metadata: {
-                pageCount,
-                textLength: text.length,
-                questionsFound: questions.length,
-                pdfUrl,
-            },
+            questions: allQuestions,
+            markdownPreview,
+            message: `Successfully parsed ${allQuestions.length} questions`,
+            questionCount: allQuestions.length,
+            pdfUrl,
         });
     } catch (error) {
         console.error('Error parsing PDF:', error);
         return NextResponse.json(
-            { error: error instanceof Error ? error.message : 'Failed to parse PDF' },
+            {
+                success: false,
+                error: error instanceof Error ? error.message : 'Failed to parse PDF',
+            },
             { status: 500 }
         );
     }

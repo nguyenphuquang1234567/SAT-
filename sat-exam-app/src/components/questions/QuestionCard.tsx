@@ -15,7 +15,9 @@ interface QuestionCardProps {
         optionC: string;
         optionD: string;
         correctAnswer: 'A' | 'B' | 'C' | 'D';
+        rawNumber?: number;
     };
+
     index: number;
     isEditing?: boolean;
     onEdit?: (question: QuestionCardProps['question']) => void;
@@ -72,8 +74,9 @@ export default function QuestionCard({
                         <GripVertical className="w-5 h-5 text-[#003366]/40" />
                     )}
                     <span className="w-10 h-10 flex items-center justify-center bg-[#003366] text-white font-bold text-lg">
-                        {index + 1}
+                        {question.rawNumber ?? index + 1}
                     </span>
+
                 </div>
 
                 {!isEditing && (
@@ -129,10 +132,13 @@ export default function QuestionCard({
                      font-medium text-[#003366]"
                 />
             ) : (
-                <div className="text-[#003366] font-medium mb-4 markdown-content">
+                <div className="text-[#003366] font-medium mb-4">
                     <ReactMarkdown
                         remarkPlugins={[remarkMath]}
                         rehypePlugins={[rehypeKatex]}
+                        components={{
+                            p: ({ children }) => <p className="mb-2 whitespace-pre-wrap">{children}</p>,
+                        }}
                     >
                         {question.content}
                     </ReactMarkdown>
