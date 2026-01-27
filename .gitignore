@@ -1,0 +1,30 @@
+# AI Agent Skills
+AI-Agent-Skills/
+.agent/
+
+# Next.js
+sat-exam-app/.next/
+sat-exam-app/out/
+sat-exam-app/build/
+
+# Dependencies
+sat-exam-app/node_modules/
+
+# Environment variables
+sat-exam-app/.env
+sat-exam-app/.env.local
+sat-exam-app/.env.development.local
+sat-exam-app/.env.test.local
+sat-exam-app/.env.production.local
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS files
+.DS_Store
+*.pem
+
+# Prisma
+sat-exam-app/prisma/migrations/

@@ -1,0 +1,425 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<implementation_plan>
+    <project_info>
+        <name>SAT Exam Platform</name>
+        <description>Web application cho giáo viên upload bài test và học sinh làm bài thi final/midterm với các tính năng bảo mật</description>
+        <created_date>2026-01-27</created_date>
+        <total_phases>5</total_phases>
+    </project_info>
+
+    <!-- ==================== PHASE 1: FOUNDATION ==================== -->
+    <phase number="1">
+        <name>Foundation - Project Setup &amp; Authentication</name>
+        <duration>1-2 tuần</duration>
+        <priority>Critical</priority>
+        <description>Thiết lập nền tảng dự án và hệ thống đăng nhập cho giáo viên và học sinh</description>
+        
+        <tasks>
+            <task id="1.1">
+                <name>Project Initialization</name>
+                <subtasks>
+                    <subtask>Khởi tạo Next.js project với TypeScript</subtask>
+                    <subtask>Cấu hình TailwindCSS cho styling</subtask>
+                    <subtask>Setup Prisma ORM</subtask>
+                    <subtask>Kết nối PostgreSQL database (Supabase)</subtask>
+                    <subtask>Cấu hình ESLint và Prettier</subtask>
+                </subtasks>
+            </task>
+            
+            <task id="1.2">
+                <name>Database Schema Design</name>
+                <subtasks>
+                    <subtask>Tạo model User (id, email, password, role: TEACHER/STUDENT, name, createdAt)</subtask>
+                    <subtask>Tạo model Class (id, name, teacherId, students[])</subtask>
+                    <subtask>Tạo model Exam (id, title, type: MIDTERM/FINAL, classId, duration, startTime, endTime, isActive)</subtask>
+                    <subtask>Tạo model Question (id, examId, content, optionA, optionB, optionC, optionD, correctAnswer, points)</subtask>
+                    <subtask>Tạo model StudentExam (id, studentId, examId, startedAt, submittedAt, score, status)</subtask>
+                    <subtask>Tạo model StudentAnswer (id, studentExamId, questionId, selectedAnswer, isCorrect)</subtask>
+                </subtasks>
+            </task>
+            
+            <task id="1.3">
+                <name>Authentication System</name>
+                <subtasks>
+                    <subtask>Implement đăng ký tài khoản (Teacher/Student)</subtask>
+                    <subtask>Implement đăng nhập với email/password</subtask>
+                    <subtask>Tạo JWT token authentication</subtask>
+                    <subtask>Middleware bảo vệ routes theo role</subtask>
+                    <subtask>Tạo trang Login/Register UI</subtask>
+                    <subtask>Session management và logout</subtask>
+                </subtasks>
+            </task>
+        </tasks>
+        
+        <deliverables>
+            <deliverable>Project structure hoàn chỉnh</deliverable>
+            <deliverable>Database schema và migrations</deliverable>
+            <deliverable>Hệ thống login/register hoạt động</deliverable>
+            <deliverable>Role-based access control</deliverable>
+        </deliverables>
+    </phase>
+
+    <!-- ==================== PHASE 2: TEACHER DASHBOARD ==================== -->
+    <phase number="2">
+        <name>Teacher Dashboard - Exam Management</name>
+        <duration>1-2 tuần</duration>
+        <priority>High</priority>
+        <description>Xây dựng dashboard cho giáo viên tạo và quản lý bài thi</description>
+        
+        <tasks>
+            <task id="2.1">
+                <name>Teacher Dashboard UI</name>
+                <subtasks>
+                    <subtask>Layout dashboard với sidebar navigation</subtask>
+                    <subtask>Trang overview hiển thị thống kê tổng quan</subtask>
+                    <subtask>Danh sách các lớp học</subtask>
+                    <subtask>Danh sách các bài thi đã tạo</subtask>
+                </subtasks>
+            </task>
+            
+            <task id="2.2">
+                <name>Class Management</name>
+                <subtasks>
+                    <subtask>Tạo lớp học mới</subtask>
+                    <subtask>Thêm học sinh vào lớp (bằng email hoặc mã lớp)</subtask>
+                    <subtask>Xem danh sách học sinh trong lớp</subtask>
+                    <subtask>Xóa học sinh khỏi lớp</subtask>
+                </subtasks>
+            </task>
+            
+            <task id="2.3">
+                <name>Exam Creation</name>
+                <subtasks>
+                    <subtask>Form tạo bài thi mới (title, type, duration, start/end time)</subtask>
+                    <subtask>Gán bài thi cho lớp học</subtask>
+                    <subtask>Cài đặt thời gian bắt đầu và kết thúc</subtask>
+                    <subtask>Bật/tắt chế độ active cho bài thi</subtask>
+                </subtasks>
+            </task>
+            
+            <task id="2.4">
+                <name>Question Management</name>
+                <subtasks>
+                    <subtask>Form thêm câu hỏi trắc nghiệm (4 đáp án A-D)</subtask>
+                    <subtask>Chỉnh sửa câu hỏi đã tạo</subtask>
+                    <subtask>Xóa câu hỏi</subtask>
+                    <subtask>Sắp xếp thứ tự câu hỏi</subtask>
+                    <subtask>Import câu hỏi từ file CSV/Excel (optional)</subtask>
+                    <subtask>Preview bài thi trước khi publish</subtask>
+                </subtasks>
+            </task>
+            
+            <task id="2.5">
+                <name>Results &amp; Analytics</name>
+                <subtasks>
+                    <subtask>Xem danh sách học sinh đã làm bài</subtask>
+                    <subtask>Xem điểm từng học sinh</subtask>
+                    <subtask>Xem chi tiết câu trả lời của học sinh</subtask>
+                    <subtask>Thống kê điểm trung bình, cao nhất, thấp nhất</subtask>
+                    <subtask>Export kết quả ra Excel</subtask>
+                </subtasks>
+            </task>
+        </tasks>
+        
+        <deliverables>
+            <deliverable>Teacher Dashboard hoàn chỉnh</deliverable>
+            <deliverable>CRUD lớp học và học sinh</deliverable>
+            <deliverable>CRUD bài thi và câu hỏi</deliverable>
+            <deliverable>Hệ thống xem kết quả và thống kê</deliverable>
+        </deliverables>
+    </phase>
+
+    <!-- ==================== PHASE 3: STUDENT EXAM INTERFACE ==================== -->
+    <phase number="3">
+        <name>Student Interface - Exam Taking</name>
+        <duration>1-2 tuần</duration>
+        <priority>High</priority>
+        <description>Xây dựng giao diện làm bài thi cho học sinh</description>
+        
+        <tasks>
+            <task id="3.1">
+                <name>Student Dashboard</name>
+                <subtasks>
+                    <subtask>Trang chủ hiển thị các lớp đã tham gia</subtask>
+                    <subtask>Danh sách bài thi sắp tới</subtask>
+                    <subtask>Lịch sử các bài thi đã làm</subtask>
+                    <subtask>Xem điểm các bài thi</subtask>
+                </subtasks>
+            </task>
+            
+            <task id="3.2">
+                <name>Exam Taking Interface</name>
+                <subtasks>
+                    <subtask>Trang waiting room trước khi bắt đầu thi</subtask>
+                    <subtask>Hiển thị đề thi với các câu hỏi</subtask>
+                    <subtask>Navigation giữa các câu hỏi</subtask>
+                    <subtask>Đánh dấu câu hỏi để review</subtask>
+                    <subtask>Countdown timer hiển thị thời gian còn lại</subtask>
+                    <subtask>Auto-save câu trả lời</subtask>
+                    <subtask>Nút submit bài thi</subtask>
+                    <subtask>Confirmation modal trước khi nộp bài</subtask>
+                </subtasks>
+            </task>
+            
+            <task id="3.3">
+                <name>Exam Submission</name>
+                <subtasks>
+                    <subtask>Xử lý logic nộp bài</subtask>
+                    <subtask>Tính điểm tự động</subtask>
+                    <subtask>Auto-submit khi hết thời gian</subtask>
+                    <subtask>Trang kết quả sau khi nộp bài</subtask>
+                    <subtask>Xem lại bài làm (nếu giáo viên cho phép)</subtask>
+                </subtasks>
+            </task>
+        </tasks>
+        
+        <deliverables>
+            <deliverable>Student Dashboard</deliverable>
+            <deliverable>Giao diện làm bài thi hoàn chỉnh</deliverable>
+            <deliverable>Timer và auto-save</deliverable>
+            <deliverable>Hệ thống chấm điểm tự động</deliverable>
+        </deliverables>
+    </phase>
+
+    <!-- ==================== PHASE 4: SECURITY FEATURES ==================== -->
+    <phase number="4">
+        <name>Security - Anti-Cheating Measures</name>
+        <duration>1-2 tuần</duration>
+        <priority>Critical</priority>
+        <description>Implement các tính năng bảo mật chống gian lận</description>
+        
+        <tasks>
+            <task id="4.1">
+                <name>Fullscreen Lock Mode</name>
+                <subtasks>
+                    <subtask>Bắt buộc vào chế độ fullscreen khi bắt đầu thi</subtask>
+                    <subtask>Detect khi user thoát fullscreen</subtask>
+                    <subtask>Hiển thị cảnh báo và yêu cầu quay lại fullscreen</subtask>
+                    <subtask>Log số lần vi phạm</subtask>
+                    <subtask>Auto-submit nếu vi phạm quá X lần</subtask>
+                </subtasks>
+                <technical_approach>
+                    <method>Fullscreen API (document.documentElement.requestFullscreen())</method>
+                    <method>Event listener cho fullscreenchange và visibilitychange</method>
+                    <method>Lưu violation count vào database</method>
+                </technical_approach>
+            </task>
+            
+            <task id="4.2">
+                <name>Tab/Window Focus Detection</name>
+                <subtasks>
+                    <subtask>Detect khi user switch tab hoặc window</subtask>
+                    <subtask>Hiển thị warning overlay</subtask>
+                    <subtask>Pause timer khi không focus (optional)</subtask>
+                    <subtask>Log thời gian và số lần blur</subtask>
+                </subtasks>
+                <technical_approach>
+                    <method>Page Visibility API (document.visibilityState)</method>
+                    <method>Window blur/focus events</method>
+                </technical_approach>
+            </task>
+            
+            <task id="4.3">
+                <name>Copy Prevention</name>
+                <subtasks>
+                    <subtask>Disable text selection trên câu hỏi</subtask>
+                    <subtask>Block Ctrl+C / Cmd+C keyboard shortcut</subtask>
+                    <subtask>Disable right-click context menu</subtask>
+                    <subtask>CSS user-select: none cho content</subtask>
+                </subtasks>
+                <technical_approach>
+                    <method>CSS: user-select: none; -webkit-user-select: none;</method>
+                    <method>JavaScript: event.preventDefault() cho copy, contextmenu events</method>
+                    <method>Keyboard event listener block Ctrl+C, Ctrl+A</method>
+                </technical_approach>
+            </task>
+            
+            <task id="4.4">
+                <name>Paste Prevention</name>
+                <subtasks>
+                    <subtask>Block Ctrl+V / Cmd+V trong answer fields</subtask>
+                    <subtask>Clear clipboard khi bắt đầu thi</subtask>
+                    <subtask>Disable paste event trên input/textarea</subtask>
+                </subtasks>
+                <technical_approach>
+                    <method>JavaScript: event.preventDefault() cho paste event</method>
+                    <method>Input event validation</method>
+                </technical_approach>
+            </task>
+            
+            <task id="4.5">
+                <name>Additional Security</name>
+                <subtasks>
+                    <subtask>Block keyboard shortcuts (Ctrl+P, F12, etc.)</subtask>
+                    <subtask>Disable developer tools detection</subtask>
+                    <subtask>Randomize thứ tự câu hỏi cho mỗi học sinh</subtask>
+                    <subtask>Randomize thứ tự đáp án</subtask>
+                    <subtask>IP logging</subtask>
+                    <subtask>One session per student (kick old session)</subtask>
+                </subtasks>
+            </task>
+            
+            <task id="4.6">
+                <name>Violation Tracking</name>
+                <subtasks>
+                    <subtask>Database table để lưu violations</subtask>
+                    <subtask>Real-time logging violations</subtask>
+                    <subtask>Teacher có thể xem violation log của học sinh</subtask>
+                    <subtask>Warning levels: light, medium, severe</subtask>
+                </subtasks>
+            </task>
+        </tasks>
+        
+        <deliverables>
+            <deliverable>Fullscreen lock mode</deliverable>
+            <deliverable>Tab switching detection</deliverable>
+            <deliverable>Copy/Paste blocking</deliverable>
+            <deliverable>Violation tracking system</deliverable>
+            <deliverable>Question/Answer randomization</deliverable>
+        </deliverables>
+    </phase>
+
+    <!-- ==================== PHASE 5: POLISH & DEPLOYMENT ==================== -->
+    <phase number="5">
+        <name>Polish &amp; Deployment</name>
+        <duration>1 tuần</duration>
+        <priority>Medium</priority>
+        <description>Hoàn thiện UI/UX, testing và deploy</description>
+        
+        <tasks>
+            <task id="5.1">
+                <name>UI/UX Polish</name>
+                <subtasks>
+                    <subtask>Responsive design cho mobile/tablet</subtask>
+                    <subtask>Loading states và skeletons</subtask>
+                    <subtask>Error handling và toast notifications</subtask>
+                    <subtask>Accessibility improvements</subtask>
+                    <subtask>Dark mode (optional)</subtask>
+                </subtasks>
+            </task>
+            
+            <task id="5.2">
+                <name>Testing</name>
+                <subtasks>
+                    <subtask>Unit tests cho core functions</subtask>
+                    <subtask>Integration tests cho API routes</subtask>
+                    <subtask>E2E tests cho critical flows</subtask>
+                    <subtask>Security testing cho anti-cheat features</subtask>
+                    <subtask>Cross-browser testing</subtask>
+                </subtasks>
+            </task>
+            
+            <task id="5.3">
+                <name>Performance Optimization</name>
+                <subtasks>
+                    <subtask>Image optimization</subtask>
+                    <subtask>Code splitting và lazy loading</subtask>
+                    <subtask>Database query optimization</subtask>
+                    <subtask>Caching strategies</subtask>
+                </subtasks>
+            </task>
+            
+            <task id="5.4">
+                <name>Deployment</name>
+                <subtasks>
+                    <subtask>Setup production database</subtask>
+                    <subtask>Deploy lên Vercel hoặc similar</subtask>
+                    <subtask>Configure environment variables</subtask>
+                    <subtask>Setup domain và SSL</subtask>
+                    <subtask>Monitoring và error tracking (Sentry)</subtask>
+                </subtasks>
+            </task>
+        </tasks>
+        
+        <deliverables>
+            <deliverable>Polished UI/UX</deliverable>
+            <deliverable>Test suite</deliverable>
+            <deliverable>Production deployment</deliverable>
+            <deliverable>Documentation</deliverable>
+        </deliverables>
+    </phase>
+
+    <!-- ==================== TECH STACK ==================== -->
+    <tech_stack>
+        <frontend>
+            <technology name="Next.js 14+">React framework với App Router</technology>
+            <technology name="TypeScript">Type safety</technology>
+            <technology name="TailwindCSS">Styling</technology>
+            <technology name="Shadcn/ui">UI components</technology>
+            <technology name="React Hook Form">Form handling</technology>
+            <technology name="Zod">Validation</technology>
+        </frontend>
+        
+        <backend>
+            <technology name="Next.js API Routes">Backend API</technology>
+            <technology name="Prisma">ORM</technology>
+            <technology name="PostgreSQL">Database (Supabase/Neon)</technology>
+            <technology name="NextAuth.js hoặc Clerk">Authentication</technology>
+            <technology name="JWT">Token-based auth</technology>
+        </backend>
+        
+        <security>
+            <technology name="Fullscreen API">Lock mode</technology>
+            <technology name="Page Visibility API">Tab detection</technology>
+            <technology name="CSS + JS">Copy/Paste prevention</technology>
+        </security>
+        
+        <deployment>
+            <technology name="Vercel">Hosting</technology>
+            <technology name="Supabase">Database hosting</technology>
+        </deployment>
+    </tech_stack>
+
+    <!-- ==================== TIMELINE SUMMARY ==================== -->
+    <timeline_summary>
+        <total_duration>5-9 tuần</total_duration>
+        <phases>
+            <phase_summary number="1" duration="1-2 tuần">Foundation - Setup &amp; Auth</phase_summary>
+            <phase_summary number="2" duration="1-2 tuần">Teacher Dashboard</phase_summary>
+            <phase_summary number="3" duration="1-2 tuần">Student Exam Interface</phase_summary>
+            <phase_summary number="4" duration="1-2 tuần">Security Features</phase_summary>
+            <phase_summary number="5" duration="1 tuần">Polish &amp; Deploy</phase_summary>
+        </phases>
+    </timeline_summary>
+
+    <!-- ==================== MVP FEATURES ==================== -->
+    <mvp_features>
+        <description>Nếu cần ra MVP nhanh, focus vào các features sau:</description>
+        <must_have>
+            <feature>Login cho Teacher/Student</feature>
+            <feature>Teacher tạo bài thi và câu hỏi</feature>
+            <feature>Student làm bài thi</feature>
+            <feature>Fullscreen lock mode</feature>
+            <feature>Copy/Paste prevention</feature>
+            <feature>Tab switching detection</feature>
+            <feature>Auto-grading</feature>
+        </must_have>
+        <nice_to_have>
+            <feature>Import questions từ file</feature>
+            <feature>Export results</feature>
+            <feature>Question randomization</feature>
+            <feature>Dark mode</feature>
+            <feature>Advanced analytics</feature>
+        </nice_to_have>
+    </mvp_features>
+
+    <!-- ==================== RISKS & MITIGATIONS ==================== -->
+    <risks>
+        <risk id="1">
+            <name>Browser Compatibility</name>
+            <description>Fullscreen API và security features có thể không hoạt động giống nhau trên các browser</description>
+            <mitigation>Test kỹ trên Chrome, Firefox, Safari, Edge. Có fallback cho các tính năng không support</mitigation>
+        </risk>
+        <risk id="2">
+            <name>Security Bypass</name>
+            <description>Học sinh tech-savvy có thể tìm cách bypass các security measures</description>
+            <mitigation>Multiple layers of protection, violation logging, và teacher review. Không có solution 100% secure trên browser</mitigation>
+        </risk>
+        <risk id="3">
+            <name>Network Issues</name>
+            <description>Mất kết nối internet giữa chừng khi làm bài</description>
+            <mitigation>Auto-save answers, offline detection, và recovery mechanism</mitigation>
+        </risk>
+    </risks>
+
+</implementation_plan>
