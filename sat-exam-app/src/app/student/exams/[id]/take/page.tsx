@@ -3,7 +3,7 @@
 
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { ChevronLeft, ChevronRight, Save, LogOut, Bookmark } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Save, LogOut, Bookmark, Maximize } from 'lucide-react';
 import ExamTimer from '@/components/exam/ExamTimer';
 import AnswerSheet from '@/components/exam/AnswerSheet';
 import ViolationWarningModal from '@/components/exam/ViolationWarningModal';
@@ -54,6 +54,7 @@ export default function ExamTakePage({ params }: { params: Promise<{ id: string 
     // Fullscreen lock state
     const { isFullscreen, enterFullscreen, isSupported } = useFullscreenLock();
     const [showViolationModal, setShowViolationModal] = useState(false);
+    const [showFullscreenRequest, setShowFullscreenRequest] = useState(false);
     const [violationCount, setViolationCount] = useState(0);
     const [maxViolations, setMaxViolations] = useState(3);
     const [isReturningToFullscreen, setIsReturningToFullscreen] = useState(false);
@@ -133,8 +134,15 @@ export default function ExamTakePage({ params }: { params: Promise<{ id: string 
     // Enter fullscreen on mount
     useEffect(() => {
         if (!loading && data && isSupported && !hasEnteredFullscreenRef.current) {
-            hasEnteredFullscreenRef.current = true;
-            enterFullscreen();
+            const attemptFullscreen = async () => {
+                const success = await enterFullscreen();
+                if (success) {
+                    hasEnteredFullscreenRef.current = true;
+                } else {
+                    setShowFullscreenRequest(true);
+                }
+            };
+            attemptFullscreen();
         }
     }, [loading, data, isSupported, enterFullscreen]);
 
@@ -249,6 +257,14 @@ export default function ExamTakePage({ params }: { params: Promise<{ id: string 
         setIsReturningToFullscreen(false);
     };
 
+    const handleManualFullscreen = async () => {
+        const success = await enterFullscreen();
+        if (success) {
+            hasEnteredFullscreenRef.current = true;
+            setShowFullscreenRequest(false);
+        }
+    };
+
     const saveProgress = async (currentAnswers: Record<string, string>, currentFlags: Record<string, boolean> = flaggedRef.current) => {
         if (!unwrappedParams || !data) return;
         setIsSaving(true);
@@ -356,6 +372,27 @@ export default function ExamTakePage({ params }: { params: Promise<{ id: string 
                 onReturnToFullscreen={handleReturnToFullscreen}
                 isReturning={isReturningToFullscreen}
             />
+
+            {/* Fullscreen Request Overlay */}
+            {showFullscreenRequest && (
+                <div className="fixed inset-0 bg-gray-900 z-50 flex items-center justify-center p-4">
+                    <div className="bg-white rounded-xl max-w-md w-full p-8 text-center shadow-2xl">
+                        <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <Maximize size={32} />
+                        </div>
+                        <h2 className="text-2xl font-bold text-gray-900 mb-3">Chế độ toàn màn hình</h2>
+                        <p className="text-gray-600 mb-8">
+                            Bài thi yêu cầu chế độ toàn màn hình để đảm bảo tính công bằng. Vui lòng nhấn nút bên dưới để bắt đầu.
+                        </p>
+                        <button
+                            onClick={handleManualFullscreen}
+                            className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-500/30"
+                        >
+                            Bật toàn màn hình
+                        </button>
+                    </div>
+                </div>
+            )}
 
             <div className="min-h-screen bg-gray-100 flex flex-col h-screen overflow-hidden text-[#003366]">
                 {/* Header */}

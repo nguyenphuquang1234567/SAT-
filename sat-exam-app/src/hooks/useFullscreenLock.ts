@@ -62,6 +62,17 @@ export function useFullscreenLock(): UseFullscreenLockReturn {
 
     const enterFullscreen = useCallback(async (): Promise<boolean> => {
         const elem = document.documentElement as any;
+        const doc = document as any;
+
+        // Check if already in fullscreen
+        if (
+            doc.fullscreenElement ||
+            doc.webkitFullscreenElement ||
+            doc.mozFullScreenElement ||
+            doc.msFullscreenElement
+        ) {
+            return true;
+        }
 
         try {
             if (elem.requestFullscreen) {
@@ -73,12 +84,11 @@ export function useFullscreenLock(): UseFullscreenLockReturn {
             } else if (elem.msRequestFullscreen) {
                 await elem.msRequestFullscreen();
             } else {
-                console.warn('Fullscreen API is not supported');
                 return false;
             }
             return true;
         } catch (error) {
-            console.error('Failed to enter fullscreen:', error);
+            // Silently fail, UI will handle with manual request
             return false;
         }
     }, []);
