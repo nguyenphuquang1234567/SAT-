@@ -3,8 +3,9 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Clock, BookOpen, AlertCircle, Play, ChevronLeft } from 'lucide-react';
+import { Clock, BookOpen, AlertCircle, Play, ChevronLeft, Maximize2 } from 'lucide-react';
 import Link from 'next/link';
+import { useFullscreenLock } from '@/hooks/useFullscreenLock';
 
 interface ExamDetails {
     id: string;
@@ -21,6 +22,7 @@ export default function ExamIntroPage({ params }: { params: Promise<{ id: string
     const [error, setError] = useState<string | null>(null);
     const [isStarting, setIsStarting] = useState(false);
     const [unwrappedParams, setUnwrappedParams] = useState<{ id: string } | null>(null);
+    const { enterFullscreen, isSupported } = useFullscreenLock();
 
     useEffect(() => {
         params.then(setUnwrappedParams);
@@ -70,6 +72,11 @@ export default function ExamIntroPage({ params }: { params: Promise<{ id: string
         if (!unwrappedParams) return;
         setIsStarting(true);
         try {
+            // Enter fullscreen first
+            if (isSupported) {
+                await enterFullscreen();
+            }
+
             const res = await fetch(`/api/student/exams/${unwrappedParams.id}/attempt`, {
                 method: 'POST'
             });
@@ -158,8 +165,22 @@ export default function ExamIntroPage({ params }: { params: Promise<{ id: string
                             <ul className="text-sm text-gray-600 space-y-2 list-disc pl-5">
                                 <li>Đảm bảo kết nối mạng ổn định trong suốt quá trình làm bài.</li>
                                 <li>Hệ thống sẽ tự động nộp bài khi hết giờ.</li>
-                                <li>Không thoát trình duyệt hoặc chuyển tab quá nhiều lần.</li>
+                                <li className="font-semibold text-red-600">Không thoát khỏi chế độ toàn màn hình hoặc chuyển tab. Vi phạm nhiều lần sẽ bị tự động nộp bài.</li>
                             </ul>
+                        </div>
+
+                        {/* Fullscreen Warning Banner */}
+                        <div className="bg-red-50 border border-red-200 p-4 rounded-xl">
+                            <div className="flex items-start gap-3">
+                                <Maximize2 className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                                <div>
+                                    <h4 className="font-bold text-red-800 mb-1">Chế độ Fullscreen bắt buộc</h4>
+                                    <p className="text-sm text-red-700">
+                                        Bài thi sẽ được thực hiện ở chế độ toàn màn hình. Bạn sẽ bị cảnh báo nếu thoát khỏi fullscreen
+                                        hoặc chuyển sang tab/cửa sổ khác. <strong>Sau 3 lần vi phạm, bài thi sẽ tự động được nộp.</strong>
+                                    </p>
+                                </div>
+                            </div>
                         </div>
 
                         <button

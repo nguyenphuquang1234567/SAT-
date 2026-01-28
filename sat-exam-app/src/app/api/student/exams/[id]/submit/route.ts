@@ -78,6 +78,10 @@ export async function POST(
 
         // 3. If Final Submission: Calculate Score and Update Status
         if (isFinalSubmission) {
+            // Get client IP for logging
+            const forwardedFor = request.headers.get('x-forwarded-for');
+            const submitIp = forwardedFor?.split(',')[0]?.trim() || request.headers.get('x-real-ip') || 'unknown';
+
             const examQuestions = await prisma.question.findMany({
                 where: { examId: examId }
             });
@@ -114,8 +118,9 @@ export async function POST(
                     status: 'SUBMITTED',
                     score: score,
                     maxScore: maxScore,
-                    submittedAt: new Date()
-                }
+                    submittedAt: new Date(),
+                    submitIp: submitIp
+                } as any
             });
         }
 

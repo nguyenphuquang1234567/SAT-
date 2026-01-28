@@ -19,6 +19,13 @@ export async function POST(
         const studentId = session.user.id;
         const examId = id;
 
+        // Get client IP for logging
+        const forwardedFor = request.headers.get('x-forwarded-for');
+        const clientIp = forwardedFor?.split(',')[0]?.trim() || request.headers.get('x-real-ip') || 'unknown';
+
+        // Generate unique session ID
+        const sessionId = `${studentId}-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+
         // 1. Check if exam exists and is accessible
         const exam = await prisma.exam.findUnique({
             where: { id: examId },
@@ -69,23 +76,35 @@ export async function POST(
             }
         });
 
-        // 4. Create attempt if not exists
+        // 4. Create attempt if not exists, or update with new session
         if (!studentExam) {
             studentExam = await prisma.studentExam.create({
                 data: {
                     studentId,
                     examId,
                     status: 'IN_PROGRESS',
-                    startedAt: new Date()
-                }
+                    startedAt: new Date(),
+                    startIp: clientIp,
+                    sessionId: sessionId
+                } as any
             });
         } else if (studentExam.status === 'SUBMITTED' || studentExam.status === 'GRADED') {
             return NextResponse.json({ error: 'You have already submitted this exam' }, { status: 403 });
+        } else {
+            // Existing IN_PROGRESS attempt - update session ID (kicks old session)
+            await prisma.studentExam.update({
+                where: { id: studentExam.id },
+                data: {
+                    sessionId: sessionId,
+                    startIp: clientIp
+                } as any
+            });
         }
 
         return NextResponse.json({
             success: true,
-            attemptId: studentExam.id
+            attemptId: studentExam.id,
+            sessionId: sessionId
         });
 
     } catch (error) {

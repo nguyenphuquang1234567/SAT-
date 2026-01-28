@@ -43,7 +43,8 @@ export async function GET(
                 id: true,
                 title: true,
                 duration: true,
-                pdfUrl: true, // Added pdfUrl
+                pdfUrl: true,
+                maxViolations: true,
                 questions: {
                     select: {
                         id: true,
@@ -109,10 +110,13 @@ export async function GET(
                 title: exam.title,
                 duration: exam.duration,
                 pdfUrl: exam.pdfUrl,
+                maxViolations: exam.maxViolations || 3,
                 questions: questionsForFrontend
             },
             startedAt: studentExam.startedAt,
-            timeSpent: (studentExam as any).timeSpent || 0, // Added
+            timeSpent: (studentExam as any).timeSpent || 0,
+            violationCount: studentExam.violationCount || 0,
+            sessionId: (studentExam as any).sessionId || null,
             savedAnswers: existingAnswers
         });
 
