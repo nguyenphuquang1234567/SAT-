@@ -4,6 +4,8 @@ import { use, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ChevronLeft, Edit, Clock, Calendar, CheckCircle, FileText, Settings, Trash2, ChartBar } from 'lucide-react';
+import ConfirmModal from '@/components/exam/ConfirmModal';
+import InfoModal from '@/components/exam/InfoModal';
 
 
 interface Question {
@@ -33,6 +35,18 @@ export default function ExamDetailPage({ params }: { params: Promise<{ id: strin
     const [exam, setExam] = useState<ExamDetail | null>(null);
     const [loading, setLoading] = useState(true);
     const [publishing, setPublishing] = useState(false);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [infoModal, setInfoModal] = useState<{
+        isOpen: boolean;
+        title: string;
+        message: string;
+        type: 'success' | 'error' | 'info';
+    }>({
+        isOpen: false,
+        title: '',
+        message: '',
+        type: 'info'
+    });
 
     useEffect(() => {
         fetch(`/api/exams/${id}`)
@@ -51,7 +65,6 @@ export default function ExamDetailPage({ params }: { params: Promise<{ id: strin
     }, [id]);
 
     const handleStatusChange = async (newStatus: string) => {
-        if (!confirm(`Bạn có chắc chắn muốn chuyển trạng thái sang ${newStatus}?`)) return;
         setPublishing(true);
         try {
             const res = await fetch(`/api/exams/${id}`, {
@@ -62,28 +75,53 @@ export default function ExamDetailPage({ params }: { params: Promise<{ id: strin
             if (res.ok) {
                 setExam(prev => prev ? { ...prev, status: newStatus as any } : null);
             } else {
-                alert("Cập nhật thất bại");
+                setInfoModal({
+                    isOpen: true,
+                    title: 'Lỗi',
+                    message: 'Cập nhật trạng thái thất bại',
+                    type: 'error'
+                });
             }
         } catch (error) {
             console.error(error);
-            alert("Lỗi hệ thống");
+            setInfoModal({
+                isOpen: true,
+                title: 'Lỗi',
+                message: 'Lỗi hệ thống',
+                type: 'error'
+            });
         } finally {
             setPublishing(false);
         }
     };
 
-    const handleDelete = async () => {
-        if (!confirm("CẢNH BÁO: Hành động này sẽ xóa vĩnh viễn bài thi và mọi kết quả liên quan. Không thể hoàn tác!")) return;
+    const handleDelete = async (isConfirmed = false) => {
+        if (!isConfirmed) {
+            setShowDeleteConfirm(true);
+            return;
+        }
+
+        setShowDeleteConfirm(false);
         try {
             const res = await fetch(`/api/exams/${id}`, { method: 'DELETE' });
             if (res.ok) {
                 router.push('/teacher/exams');
             } else {
-                alert("Xóa thất bại");
+                setInfoModal({
+                    isOpen: true,
+                    title: 'Lỗi',
+                    message: 'Xóa bài thi thất bại',
+                    type: 'error'
+                });
             }
         } catch (error) {
             console.error(error);
-            alert("Lỗi hệ thống");
+            setInfoModal({
+                isOpen: true,
+                title: 'Lỗi',
+                message: 'Lỗi hệ thống',
+                type: 'error'
+            });
         }
     }
 
@@ -113,14 +151,10 @@ export default function ExamDetailPage({ params }: { params: Promise<{ id: strin
 
                 <div className="flex gap-2">
                     <button
-                        onClick={handleDelete}
+                        onClick={() => handleDelete()}
                         className="px-4 py-2 border-2 border-red-200 text-red-500 hover:bg-red-500 hover:text-white font-bold text-xs uppercase tracking-widest transition-colors flex items-center gap-2"
                     >
                         <Trash2 size={16} /> Xóa
-                    </button>
-                    {/* Placeholder for Edit Link */}
-                    <button className="bg-white dark:bg-white/10 hover:bg-slate-50 border-2 border-slate-200 dark:border-white/20 text-cb-blue dark:text-white px-4 py-2 font-bold text-xs uppercase tracking-widest transition-colors flex items-center gap-2">
-                        <Settings size={16} /> Cài Đặt
                     </button>
                 </div>
             </div>
@@ -132,7 +166,19 @@ export default function ExamDetailPage({ params }: { params: Promise<{ id: strin
                         <Clock size={24} />
                         <h3 className="font-black uppercase tracking-widest text-sm">Thời Gian</h3>
                     </div>
-                    <p className="text-2xl font-bold dark:text-white">{exam.duration} phút</p>
+                    <div className="space-y-1">
+                        <p className="text-2xl font-bold dark:text-white">{exam.duration} phút</p>
+                        {exam.startTime && (
+                            <p className="text-xs font-bold text-slate-400 uppercase tracking-tighter">
+                                Start: {new Date(exam.startTime).toLocaleString('vi-VN')}
+                            </p>
+                        )}
+                        {exam.endTime && (
+                            <p className="text-xs font-bold text-red-400 uppercase tracking-tighter">
+                                Deadline: {new Date(exam.endTime).toLocaleString('vi-VN')}
+                            </p>
+                        )}
+                    </div>
                 </div>
 
                 <div className="bg-white dark:bg-cb-blue-900 border-l-4 border-cb-blue p-6 shadow-sm">
@@ -237,6 +283,27 @@ export default function ExamDetailPage({ params }: { params: Promise<{ id: strin
                     </div>
                 </div>
             </div>
-        </div>
+
+            {/* Confirm Delete Modal */}
+            <ConfirmModal
+                isOpen={showDeleteConfirm}
+                title="Xóa bài thi?"
+                message="CẢNH BÁO: Hành động này sẽ xóa vĩnh viễn bài thi và mọi kết quả liên quan. Không thể hoàn tác!"
+                confirmText="Xóa vĩnh viễn"
+                cancelText="Hủy"
+                variant="danger"
+                onConfirm={() => handleDelete(true)}
+                onCancel={() => setShowDeleteConfirm(false)}
+            />
+
+            {/* General Info Modal */}
+            <InfoModal
+                isOpen={infoModal.isOpen}
+                title={infoModal.title}
+                message={infoModal.message}
+                type={infoModal.type}
+                onClose={() => setInfoModal(prev => ({ ...prev, isOpen: false }))}
+            />
+        </div >
     );
 }

@@ -53,7 +53,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         { icon: LayoutDashboard, label: 'Tổng quan', href: '/teacher' },
         { icon: Users, label: 'Lớp học', href: '/teacher/classes' },
         { icon: FileText, label: 'Bài thi', href: '/teacher/exams' },
-        { icon: Settings, label: 'Cài đặt', href: '/teacher/settings' },
     ];
 
     return (

@@ -20,6 +20,7 @@ interface DashboardData {
         className: string;
         duration: number;
         startTime: string | null;
+        endTime: string | null;
         questionCount: number;
         status: string;
         attemptStatus: string;
@@ -137,7 +138,18 @@ export default function StudentDashboard() {
                                                     <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">{exam.className}</span>
                                                 </div>
                                                 <h3 className="font-bold text-lg text-gray-900 group-hover:text-cb-blue transition-colors">{exam.title}</h3>
-                                                <div className="flex items-center gap-4 mt-2 text-sm text-gray-500 font-medium">
+                                                <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-2 text-sm text-gray-500 font-medium">
+                                                    {exam.startTime && (
+                                                        <span className="flex items-center gap-1 text-cb-blue font-bold">
+                                                            <Calendar size={14} /> Deadline: {new Date(exam.startTime).toLocaleString('vi-VN', {
+                                                                weekday: 'short',
+                                                                day: '2-digit',
+                                                                month: '2-digit',
+                                                                hour: '2-digit',
+                                                                minute: '2-digit'
+                                                            })}
+                                                        </span>
+                                                    )}
                                                     <span className="flex items-center gap-1">
                                                         <Clock size={14} /> {exam.duration} phút
                                                     </span>
@@ -146,12 +158,20 @@ export default function StudentDashboard() {
                                                     </span>
                                                 </div>
                                             </div>
-                                            <Link
-                                                href={`/student/exams/${exam.id}/intro`}
-                                                className="bg-cb-blue text-white px-5 py-2 rounded-lg font-bold text-sm shadow-lg shadow-blue-900/10 hover:bg-blue-700 transition-all flex items-center gap-2"
-                                            >
-                                                Làm bài <ArrowRight size={16} />
-                                            </Link>
+                                            <div className="flex flex-col items-end gap-2">
+                                                {exam.endTime && new Date() > new Date(exam.endTime) ? (
+                                                    <div className="bg-red-50 text-red-600 px-4 py-2 rounded-lg font-bold text-sm border border-red-100 flex items-center gap-2">
+                                                        <X size={16} /> Hết hạn
+                                                    </div>
+                                                ) : (
+                                                    <Link
+                                                        href={`/student/exams/${exam.id}/intro`}
+                                                        className="bg-cb-blue text-white px-5 py-2 rounded-lg font-bold text-sm shadow-lg shadow-blue-900/10 hover:bg-blue-700 transition-all flex items-center gap-2"
+                                                    >
+                                                        Làm bài <ArrowRight size={16} />
+                                                    </Link>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 ))}

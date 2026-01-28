@@ -64,6 +64,7 @@ export async function GET(request: NextRequest) {
             className: exam.class.name,
             duration: exam.duration,
             startTime: exam.startTime,
+            endTime: exam.endTime,
             questionCount: exam._count.questions,
             status: exam.status,
             attemptStatus: exam.studentExams[0]?.status || 'NOT_STARTED'

@@ -4,6 +4,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Clock, BookOpen, AlertCircle, Play, ChevronLeft, Maximize2 } from 'lucide-react';
+import InfoModal from '@/components/exam/InfoModal';
 import Link from 'next/link';
 import { useFullscreenLock } from '@/hooks/useFullscreenLock';
 
@@ -23,6 +24,17 @@ export default function ExamIntroPage({ params }: { params: Promise<{ id: string
     const [isStarting, setIsStarting] = useState(false);
     const [unwrappedParams, setUnwrappedParams] = useState<{ id: string } | null>(null);
     const { enterFullscreen, isSupported } = useFullscreenLock();
+    const [infoModal, setInfoModal] = useState<{
+        isOpen: boolean;
+        title: string;
+        message: string;
+        type: 'success' | 'error' | 'info';
+    }>({
+        isOpen: false,
+        title: '',
+        message: '',
+        type: 'info'
+    });
 
     useEffect(() => {
         params.then(setUnwrappedParams);
@@ -88,7 +100,12 @@ export default function ExamIntroPage({ params }: { params: Promise<{ id: string
 
             router.push(`/student/exams/${unwrappedParams.id}/take`);
         } catch (err: any) {
-            alert(err.message);
+            setInfoModal({
+                isOpen: true,
+                title: 'Lỗi',
+                message: err.message || 'Không thể bắt đầu bài thi',
+                type: 'error'
+            });
             setIsStarting(false);
         }
     };
@@ -202,6 +219,14 @@ export default function ExamIntroPage({ params }: { params: Promise<{ id: string
                     </div>
                 </div>
             </div>
+
+            <InfoModal
+                isOpen={infoModal.isOpen}
+                title={infoModal.title}
+                message={infoModal.message}
+                type={infoModal.type}
+                onClose={() => setInfoModal(prev => ({ ...prev, isOpen: false }))}
+            />
         </div>
     );
 }

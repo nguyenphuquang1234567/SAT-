@@ -17,6 +17,8 @@ interface Exam {
         questions: number;
         studentExams: number;
     };
+    startTime: string | null;
+    endTime: string | null;
     createdAt: string;
 }
 
@@ -118,6 +120,22 @@ export default function ExamsManagementPage() {
                                             {exam._count.studentExams} bài nộp
                                         </div>
                                     </div>
+                                    {(exam.startTime || exam.endTime) && (
+                                        <div className="mt-4 flex flex-wrap gap-4 text-xs font-bold uppercase tracking-widest text-slate-400">
+                                            {exam.startTime && (
+                                                <div className="flex items-center gap-2 bg-slate-50 dark:bg-white/5 px-3 py-1.5 rounded border border-slate-100 dark:border-white/10">
+                                                    <Calendar size={14} className="text-cb-blue dark:text-cb-yellow" />
+                                                    <span>Bắt đầu: {new Date(exam.startTime).toLocaleString('vi-VN')}</span>
+                                                </div>
+                                            )}
+                                            {exam.endTime && (
+                                                <div className="flex items-center gap-2 bg-slate-50 dark:bg-white/5 px-3 py-1.5 rounded border border-slate-100 dark:border-white/10">
+                                                    <Clock size={14} className="text-red-400" />
+                                                    <span>Deadline: {new Date(exam.endTime).toLocaleString('vi-VN')}</span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
                                 <div className="text-right">
                                     <span className="text-xs text-slate-400 font-mono">

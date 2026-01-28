@@ -72,11 +72,11 @@ export default function Home() {
         <div className="flex flex-col lg:flex-row gap-20">
           <div className="flex-1 z-10">
             <div className="inline-block bg-cb-blue text-cb-yellow px-4 py-1 font-black italic tracking-widest uppercase text-xs mb-8">
-              Bảo mật 100% • Official Platform
+              Thi thử 100% • Official Platform
             </div>
             <h1 className="text-6xl md:text-8xl lg:text-[100px] font-black leading-[1.3] md:leading-[1.2] tracking-tighter text-cb-blue dark:text-white uppercase italic">
               HỆ THỐNG THI <br />
-              <span className="inline-block text-white bg-cb-blue dark:bg-cb-yellow dark:text-cb-blue px-6 py-2 -ml-4 shadow-[12px_12px_0px_#fddb00] dark:shadow-[12px_12px_0px_white] my-4">BẢO MẬT</span> <br />
+              <span className="inline-block text-white bg-cb-blue dark:bg-cb-yellow dark:text-cb-blue px-6 py-2 -ml-4 shadow-[12px_12px_0px_#fddb00] dark:shadow-[12px_12px_0px_white] my-4">THỬ</span> <br />
               CHO KỲ THI SAT.
             </h1>
             <p className="mt-12 text-lg md:text-xl text-cb-blue/80 dark:text-slate-300 max-w-xl font-medium leading-relaxed border-l-4 border-cb-blue dark:border-cb-yellow pl-6">
@@ -116,7 +116,7 @@ export default function Home() {
               <Activity className="text-cb-blue" size={32} />
               <div>
                 <div className="text-4xl font-black italic text-cb-blue">100%</div>
-                <div className="text-xs font-bold uppercase tracking-widest text-slate-400">Bảo mật & Chống gian lận</div>
+                <div className="text-xs font-bold uppercase tracking-widest text-slate-400">Thi thử & Chống gian lận</div>
               </div>
             </div>
 

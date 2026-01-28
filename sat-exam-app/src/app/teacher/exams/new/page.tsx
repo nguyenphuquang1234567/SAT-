@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ChevronLeft, Save } from 'lucide-react';
+import InfoModal from '@/components/exam/InfoModal';
 
 interface Class {
     id: string;
@@ -23,6 +24,17 @@ export default function NewExamPage() {
     const [classId, setClassId] = useState('');
     const [startTime, setStartTime] = useState('');
     const [endTime, setEndTime] = useState('');
+    const [infoModal, setInfoModal] = useState<{
+        isOpen: boolean;
+        title: string;
+        message: string;
+        type: 'success' | 'error' | 'info';
+    }>({
+        isOpen: false,
+        title: '',
+        message: '',
+        type: 'info'
+    });
 
     useEffect(() => {
         // Fetch classes for dropdown
@@ -62,11 +74,21 @@ export default function NewExamPage() {
                 router.push('/teacher/exams'); // Redirect to list
             } else {
                 const text = await res.text();
-                alert(`Error: ${text}`);
+                setInfoModal({
+                    isOpen: true,
+                    title: 'Lỗi',
+                    message: `Lỗi: ${text}`,
+                    type: 'error'
+                });
             }
         } catch (error) {
             console.error(error);
-            alert('Something went wrong');
+            setInfoModal({
+                isOpen: true,
+                title: 'Lỗi',
+                message: 'Có lỗi xảy ra khi tạo bài thi',
+                type: 'error'
+            });
         } finally {
             setLoading(false);
         }
@@ -183,8 +205,15 @@ export default function NewExamPage() {
                         {loading ? 'Đang lưu...' : <><Save size={18} /> Lưu Bài Thi (Nháp)</>}
                     </button>
                 </div>
-
             </form>
+
+            <InfoModal
+                isOpen={infoModal.isOpen}
+                title={infoModal.title}
+                message={infoModal.message}
+                type={infoModal.type}
+                onClose={() => setInfoModal(prev => ({ ...prev, isOpen: false }))}
+            />
         </div>
     );
 }
