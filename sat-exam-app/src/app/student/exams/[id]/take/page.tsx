@@ -8,6 +8,7 @@ import ExamTimer from '@/components/exam/ExamTimer';
 import AnswerSheet from '@/components/exam/AnswerSheet';
 import ViolationWarningModal from '@/components/exam/ViolationWarningModal';
 import ConfirmModal from '@/components/exam/ConfirmModal';
+import InfoModal from '@/components/exam/InfoModal';
 import { useFullscreenLock } from '@/hooks/useFullscreenLock';
 import { useSessionHeartbeat } from '@/hooks/useSessionHeartbeat';
 
@@ -59,6 +60,18 @@ export default function ExamTakePage({ params }: { params: Promise<{ id: string 
     const [showFullscreenRequest, setShowFullscreenRequest] = useState(false);
     const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
     const [showExitConfirm, setShowExitConfirm] = useState(false);
+    const [infoModal, setInfoModal] = useState<{
+        isOpen: boolean;
+        title: string;
+        message: string;
+        type: 'success' | 'error' | 'info';
+        onClose?: () => void;
+    }>({
+        isOpen: false,
+        title: '',
+        message: '',
+        type: 'info'
+    });
     const [violationCount, setViolationCount] = useState(0);
     const [maxViolations, setMaxViolations] = useState(3);
     const [isReturningToFullscreen, setIsReturningToFullscreen] = useState(false);
@@ -136,8 +149,14 @@ export default function ExamTakePage({ params }: { params: Promise<{ id: string 
                 setSessionId(result.sessionId || null);
                 setLoading(false);
             } catch (err: any) {
-                alert(err.message);
-                router.push('/student/dashboard');
+                setInfoModal({
+                    isOpen: true,
+                    title: 'Lỗi',
+                    message: err.message || 'Không thể tải bài thi',
+                    type: 'error',
+                    onClose: () => router.push('/student/dashboard')
+                });
+                setLoading(false);
             }
         };
 
@@ -147,8 +166,13 @@ export default function ExamTakePage({ params }: { params: Promise<{ id: string 
     // Handle session kick
     useEffect(() => {
         if (isKicked) {
-            alert('Phiên thi của bạn đã bị đăng xuất do đăng nhập từ thiết bị khác.');
-            router.push('/student/exams');
+            setInfoModal({
+                isOpen: true,
+                title: 'Phiên đăng nhập hết hạn',
+                message: 'Phiên thi của bạn đã bị đăng xuất do đăng nhập từ thiết bị khác.',
+                type: 'error',
+                onClose: () => router.push('/student/exams')
+            });
         }
     }, [isKicked, router]);
 
@@ -192,14 +216,24 @@ export default function ExamTakePage({ params }: { params: Promise<{ id: string 
                 })
             });
 
-            alert('Nộp bài thành công!');
-            router.push(`/student/exams/${unwrappedParams.id}/result`);
+            setInfoModal({
+                isOpen: true,
+                title: 'Thành công',
+                message: 'Nộp bài thành công!',
+                type: 'success',
+                onClose: () => router.push(`/student/exams/${unwrappedParams.id}/result`)
+            });
         } catch (error) {
             console.error('Submission failed:', error);
-            alert('Có lỗi xảy ra khi nộp bài. Vui lòng thử lại.');
+            setInfoModal({
+                isOpen: true,
+                title: 'Lỗi nộp bài',
+                message: 'Có lỗi xảy ra khi nộp bài. Vui lòng thử lại.',
+                type: 'error'
+            });
             setIsSubmitting(false);
         }
-    }, [unwrappedParams, data, router]);
+    }, [unwrappedParams, data, router, showSubmitConfirm]);
 
     // Handle violation (call API and update state)
     const handleViolation = useCallback(async (type: string) => {
@@ -220,8 +254,13 @@ export default function ExamTakePage({ params }: { params: Promise<{ id: string 
 
                 if (result.shouldAutoSubmit) {
                     // Max violations reached - auto submit
-                    alert('Bạn đã vi phạm quá số lần cho phép. Bài thi sẽ được nộp tự động.');
-                    handleSubmit(true);
+                    setInfoModal({
+                        isOpen: true,
+                        title: 'Đã xảy ra vi phạm',
+                        message: 'Bạn đã vi phạm quá số lần cho phép. Bài thi sẽ được nộp tự động.',
+                        type: 'error',
+                        onClose: () => handleSubmit(true)
+                    });
                 } else {
                     // Show warning modal
                     setShowViolationModal(true);
@@ -455,6 +494,18 @@ export default function ExamTakePage({ params }: { params: Promise<{ id: string 
                 cancelText="Làm tiếp"
                 onConfirm={() => handleExit(true)}
                 onCancel={() => setShowExitConfirm(false)}
+            />
+
+            {/* General Info/Error Modal */}
+            <InfoModal
+                isOpen={infoModal.isOpen}
+                title={infoModal.title}
+                message={infoModal.message}
+                type={infoModal.type}
+                onClose={() => {
+                    setInfoModal(prev => ({ ...prev, isOpen: false }));
+                    if (infoModal.onClose) infoModal.onClose();
+                }}
             />
 
             {/* Fullscreen Request Overlay */}
