@@ -149,7 +149,7 @@ export default function StudentResultDetail() {
                                     </span>
                                 ) : (
                                     <span className="flex items-center gap-1 text-red-600 text-sm font-medium bg-red-50 px-2 py-1 rounded">
-                                        <XCircle className="w-4 h-4" /> Sai
+                                        <XCircle className="w-4 h-4" /> {ans.selectedAnswer ? 'Sai' : 'Sai (Chưa làm)'}
                                     </span>
                                 )}
                             </div>
