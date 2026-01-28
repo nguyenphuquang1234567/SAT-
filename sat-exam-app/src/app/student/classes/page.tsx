@@ -2,8 +2,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Users, BookOpen, Search, Filter, Calendar } from 'lucide-react';
+import { Users, BookOpen, Search, Filter, Calendar, Plus, X } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 interface ClassData {
     id: string;
@@ -15,10 +16,16 @@ interface ClassData {
 }
 
 export default function StudentClassesPage() {
+    const router = useRouter();
     const [classes, setClasses] = useState<ClassData[]>([]);
     const [loading, setLoading] = useState(true);
+    const [showJoinModal, setShowJoinModal] = useState(false);
+    const [joinCode, setJoinCode] = useState('');
+    const [isJoining, setIsJoining] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
+    const fetchClasses = () => {
+        setLoading(true);
         fetch('/api/student/dashboard')
             .then(res => res.json())
             .then(data => {
@@ -29,7 +36,41 @@ export default function StudentClassesPage() {
                 console.error(err);
                 setLoading(false);
             });
+    };
+
+    useEffect(() => {
+        fetchClasses();
     }, []);
+
+    const handleJoinClass = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!joinCode.trim()) return;
+
+        setIsJoining(true);
+        setError(null);
+
+        try {
+            const res = await fetch('/api/classes/join', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ code: joinCode })
+            });
+
+            if (!res.ok) {
+                const message = await res.text();
+                throw new Error(message || 'Failed to join class');
+            }
+
+            setShowJoinModal(false);
+            setJoinCode('');
+            fetchClasses(); // Refresh list
+            alert('Tham gia lớp học thành công!');
+        } catch (err: any) {
+            setError(err.message);
+        } finally {
+            setIsJoining(false);
+        }
+    };
 
     if (loading) {
         return (
@@ -46,6 +87,13 @@ export default function StudentClassesPage() {
                     <h1 className="text-3xl font-black text-cb-blue uppercase italic tracking-tight">Lớp học của tôi</h1>
                     <p className="text-gray-500 font-medium">Danh sách các lớp học bạn đang tham gia.</p>
                 </div>
+                <button
+                    onClick={() => setShowJoinModal(true)}
+                    className="flex items-center gap-2 px-6 py-3 bg-cb-blue text-white rounded-xl font-black uppercase tracking-widest text-xs shadow-lg shadow-blue-900/10 hover:bg-blue-700 transition-all"
+                >
+                    <Plus size={18} />
+                    Tham gia bằng mã lớp
+                </button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -75,9 +123,12 @@ export default function StudentClassesPage() {
                                 </div>
                             </div>
 
-                            <button className="w-full py-3 bg-gray-50 text-cb-blue font-black uppercase tracking-widest text-xs rounded-xl hover:bg-cb-blue hover:text-white transition-all">
+                            <Link
+                                href={`/student/classes/${cls.id}`}
+                                className="block w-full text-center py-3 bg-gray-50 text-cb-blue font-black uppercase tracking-widest text-xs rounded-xl hover:bg-cb-blue hover:text-white transition-all"
+                            >
                                 Xem chi tiết lớp học
-                            </button>
+                            </Link>
                         </div>
                     ))
                 ) : (
@@ -90,6 +141,46 @@ export default function StudentClassesPage() {
                     </div>
                 )}
             </div>
+            {/* Join Class Modal */}
+            {showJoinModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-cb-blue/20 backdrop-blur-sm">
+                    <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
+                        <div className="p-8">
+                            <div className="flex justify-between items-center mb-6">
+                                <h2 className="text-2xl font-black text-cb-blue uppercase italic tracking-tight">Tham gia lớp học</h2>
+                                <button onClick={() => setShowJoinModal(false)} className="text-gray-400 hover:text-gray-600 transition-colors">
+                                    <X size={24} />
+                                </button>
+                            </div>
+
+                            <p className="text-gray-500 font-medium mb-6">Nhập mã lớp được cung cấp bởi giáo viên của bạn để tham gia vào lớp học.</p>
+
+                            <form onSubmit={handleJoinClass} className="space-y-4">
+                                <div>
+                                    <label className="block text-xs font-black text-cb-blue uppercase tracking-widest mb-2">Mã lớp</label>
+                                    <input
+                                        type="text"
+                                        value={joinCode}
+                                        onChange={(e) => setJoinCode(e.target.value)}
+                                        placeholder="Ví dụ: LOP123"
+                                        className="w-full px-5 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-cb-blue focus:ring-0 transition-all font-bold text-cb-blue placeholder:text-gray-300"
+                                        autoFocus
+                                    />
+                                    {error && <p className="mt-2 text-xs font-bold text-red-500 italic">{error}</p>}
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    disabled={isJoining || !joinCode.trim()}
+                                    className="w-full py-4 bg-cb-blue text-white font-black uppercase tracking-widest text-sm rounded-2xl shadow-xl shadow-blue-900/10 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                >
+                                    {isJoining ? 'Đang xử lý...' : 'Tham gia ngay'}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
