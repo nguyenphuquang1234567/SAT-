@@ -67,6 +67,7 @@ export async function GET(
                 email: se.student.email,
                 status: se.status,
                 score: se.score,
+                maxScore: se.maxScore,
                 startedAt: se.createdAt,
                 submittedAt: se.updatedAt, // Assuming updatedAt is close to submission time for SUBMITTED
                 violationCount: se.violationCount,

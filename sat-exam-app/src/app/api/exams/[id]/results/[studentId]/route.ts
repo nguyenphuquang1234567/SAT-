@@ -60,24 +60,36 @@ export async function GET(
             return NextResponse.json({ error: 'Student attempt not found' }, { status: 404 });
         }
 
+        // Fetch all questions for the exam to ensure we show even unanswered ones
+        const examQuestions = await prisma.question.findMany({
+            where: { examId },
+            orderBy: { order: 'asc' }
+        });
+
+        // Map all questions to answers
+        const answersWithUnanswered = examQuestions.map(question => {
+            const studentAns = studentExam.answers.find(a => a.questionId === question.id);
+            return {
+                questionId: question.id,
+                questionContent: question.content,
+                questionOrder: question.order,
+                options: {
+                    A: question.optionA,
+                    B: question.optionB,
+                    C: question.optionC,
+                    D: question.optionD,
+                },
+                selectedAnswer: studentAns?.selectedAnswer || null,
+                correctAnswer: question.correctAnswer,
+                isCorrect: studentAns?.isCorrect || false,
+                points: question.points,
+            };
+        });
+
         return NextResponse.json({
             studentExam: {
                 ...studentExam,
-                answers: studentExam.answers.map(ans => ({
-                    questionId: ans.questionId,
-                    questionContent: ans.question.content,
-                    questionOrder: ans.question.order,
-                    options: {
-                        A: ans.question.optionA,
-                        B: ans.question.optionB,
-                        C: ans.question.optionC,
-                        D: ans.question.optionD,
-                    },
-                    selectedAnswer: ans.selectedAnswer,
-                    correctAnswer: ans.question.correctAnswer,
-                    isCorrect: ans.isCorrect,
-                    points: ans.question.points,
-                }))
+                answers: answersWithUnanswered
             }
         });
 

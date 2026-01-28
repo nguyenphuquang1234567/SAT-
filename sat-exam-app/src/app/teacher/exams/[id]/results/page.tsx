@@ -29,6 +29,7 @@ interface StudentResult {
     email: string;
     status: 'NOT_STARTED' | 'IN_PROGRESS' | 'SUBMITTED';
     score: number | null;
+    maxScore: number | null;
     startedAt: string;
     submittedAt: string | null;
     violationCount: number;
@@ -227,7 +228,7 @@ export default function ExamResultsPage() {
                                         </td>
                                         <td className="px-6 py-4">
                                             <span className={`font-bold ${student.score !== null ? 'text-[#003366]' : 'text-gray-400'}`}>
-                                                {student.score ?? '--'}
+                                                {student.score ?? '--'} {student.maxScore ? `/ ${student.maxScore}` : ''}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4">
