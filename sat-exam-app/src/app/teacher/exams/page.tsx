@@ -131,7 +131,7 @@ export default function ExamsManagementPage() {
                                             {exam.endTime && (
                                                 <div className="flex items-center gap-2 bg-slate-50 dark:bg-white/5 px-3 py-1.5 rounded border border-slate-100 dark:border-white/10">
                                                     <Clock size={14} className="text-red-400" />
-                                                    <span>Kết thúc: {new Date(exam.endTime).toLocaleString('vi-VN')}</span>
+                                                    <span>Deadline: {new Date(exam.endTime).toLocaleString('vi-VN')}</span>
                                                 </div>
                                             )}
                                         </div>

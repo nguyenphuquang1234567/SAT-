@@ -175,7 +175,7 @@ export default function ExamDetailPage({ params }: { params: Promise<{ id: strin
                         )}
                         {exam.endTime && (
                             <p className="text-xs font-bold text-red-400 uppercase tracking-tighter">
-                                End: {new Date(exam.endTime).toLocaleString('vi-VN')}
+                                Deadline: {new Date(exam.endTime).toLocaleString('vi-VN')}
                             </p>
                         )}
                     </div>
