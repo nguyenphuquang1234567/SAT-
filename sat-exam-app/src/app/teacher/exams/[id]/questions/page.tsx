@@ -11,6 +11,8 @@ import {
     AlertCircle,
     Loader2,
 } from 'lucide-react';
+import ConfirmModal from '@/components/exam/ConfirmModal';
+import InfoModal from '@/components/exam/InfoModal';
 import PDFUploadZone, { ParsedQuestion } from '@/components/questions/PDFUploadZone';
 import QuestionCard from '@/components/questions/QuestionCard';
 
@@ -50,6 +52,18 @@ export default function QuestionsPage({
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
+    const [questionToDelete, setQuestionToDelete] = useState<string | null>(null);
+    const [infoModal, setInfoModal] = useState<{
+        isOpen: boolean;
+        title: string;
+        message: string;
+        type: 'success' | 'error' | 'info';
+    }>({
+        isOpen: false,
+        title: '',
+        message: '',
+        type: 'info'
+    });
 
     // Fetch exam and existing questions
     useEffect(() => {
@@ -162,20 +176,33 @@ export default function QuestionsPage({
     };
 
     // Delete a saved question
-    const handleDeleteSaved = async (questionId: string) => {
-        if (!confirm('Bạn có chắc muốn xóa câu hỏi này?')) return;
+    const handleDeleteSaved = async (questionId: string | null, isConfirmed = false) => {
+        if (!isConfirmed && questionId) {
+            setQuestionToDelete(questionId);
+            return;
+        }
+
+        const idToDelete = questionId || questionToDelete;
+        if (!idToDelete) return;
+
+        setQuestionToDelete(null);
 
         try {
             const response = await fetch(
-                `/api/exams/${examId}/questions/${questionId}`,
+                `/api/exams/${examId}/questions/${idToDelete}`,
                 { method: 'DELETE' }
             );
 
             if (!response.ok) throw new Error('Failed to delete');
 
-            setSavedQuestions((prev) => prev.filter((q) => q.id !== questionId));
+            setSavedQuestions((prev) => prev.filter((q) => q.id !== idToDelete));
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Failed to delete');
+            setInfoModal({
+                isOpen: true,
+                title: 'Lỗi',
+                message: err instanceof Error ? err.message : 'Failed to delete',
+                type: 'error'
+            });
         }
     };
 
@@ -404,6 +431,26 @@ export default function QuestionsPage({
                     </p>
                 </div>
             )}
+
+            {/* Confirm Delete Modal */}
+            <ConfirmModal
+                isOpen={!!questionToDelete}
+                title="Xóa câu hỏi?"
+                message="Bạn có chắc chắn muốn xóa câu hỏi này? Hành động này không thể hoàn tác."
+                confirmText="Xóa câu hỏi"
+                variant="danger"
+                onConfirm={() => handleDeleteSaved(null, true)}
+                onCancel={() => setQuestionToDelete(null)}
+            />
+
+            {/* General Info Modal */}
+            <InfoModal
+                isOpen={infoModal.isOpen}
+                title={infoModal.title}
+                message={infoModal.message}
+                type={infoModal.type}
+                onClose={() => setInfoModal(prev => ({ ...prev, isOpen: false }))}
+            />
         </div>
     );
 }

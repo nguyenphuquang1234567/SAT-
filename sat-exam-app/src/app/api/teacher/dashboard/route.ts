@@ -27,11 +27,11 @@ export async function GET() {
             }
         });
 
-        // 3. Count Active Exams
+        // 3. Count Active Exams (Published or Active)
         const activeExamsCount = await prisma.exam.count({
             where: {
                 classId: { in: classIds },
-                status: 'ACTIVE'
+                status: { in: ['PUBLISHED', 'ACTIVE'] }
             }
         });
 

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { CheckCircle, XCircle, Clock, Award, ArrowLeft, Filter } from 'lucide-react';
+import InfoModal from '@/components/exam/InfoModal';
 
 interface ReviewQuestion {
     id: string;
@@ -39,6 +40,17 @@ export default function ExamResultPage({ params }: { params: Promise<{ id: strin
     const [data, setData] = useState<ResultData | null>(null);
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState<'ALL' | 'CORRECT' | 'INCORRECT'>('ALL');
+    const [infoModal, setInfoModal] = useState<{
+        isOpen: boolean;
+        title: string;
+        message: string;
+        type: 'success' | 'error' | 'info';
+    }>({
+        isOpen: false,
+        title: '',
+        message: '',
+        type: 'info'
+    });
 
     useEffect(() => {
         params.then(setUnwrappedParams);
@@ -62,7 +74,12 @@ export default function ExamResultPage({ params }: { params: Promise<{ id: strin
                 setData(result);
             } catch (error) {
                 console.error('Error:', error);
-                alert('Không thể tải kết quả thi.');
+                setInfoModal({
+                    isOpen: true,
+                    title: 'Lỗi',
+                    message: 'Không thể tải kết quả thi.',
+                    type: 'error'
+                });
             } finally {
                 setLoading(false);
             }
@@ -259,6 +276,14 @@ export default function ExamResultPage({ params }: { params: Promise<{ id: strin
                     </div>
                 </div>
             </div>
+
+            <InfoModal
+                isOpen={infoModal.isOpen}
+                title={infoModal.title}
+                message={infoModal.message}
+                type={infoModal.type}
+                onClose={() => setInfoModal(prev => ({ ...prev, isOpen: false }))}
+            />
         </div>
     );
 }

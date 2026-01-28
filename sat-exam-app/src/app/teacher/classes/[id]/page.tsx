@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation'; // Correct import for App Router
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
 import { ChevronLeft, Trash2, Copy, Check } from 'lucide-react';
+import ConfirmModal from '@/components/exam/ConfirmModal';
+import InfoModal from '@/components/exam/InfoModal';
 
 interface Student {
     id: string;
@@ -30,6 +32,19 @@ export default function ClassDetailPage({ params }: { params: Promise<{ id: stri
     const [classDetail, setClassDetail] = useState<ClassDetail | null>(null);
     const [loading, setLoading] = useState(true);
     const [copied, setCopied] = useState(false);
+    const [showDeleteClassConfirm, setShowDeleteClassConfirm] = useState(false);
+    const [studentToRemove, setStudentToRemove] = useState<string | null>(null);
+    const [infoModal, setInfoModal] = useState<{
+        isOpen: boolean;
+        title: string;
+        message: string;
+        type: 'success' | 'error' | 'info';
+    }>({
+        isOpen: false,
+        title: '',
+        message: '',
+        type: 'info'
+    });
 
     useEffect(() => {
         fetch(`/api/classes/${id}`)
@@ -55,42 +70,68 @@ export default function ClassDetailPage({ params }: { params: Promise<{ id: stri
         }
     };
 
-    const handleDeleteClass = async () => {
-        if (confirm("Bạn có chắc chắn muốn xóa lớp này? Hành động này không thể hoàn tác.")) {
-            try {
-                const res = await fetch(`/api/classes/${id}`, {
-                    method: 'DELETE',
+    const handleDeleteClass = async (isConfirmed = false) => {
+        if (!isConfirmed) {
+            setShowDeleteClassConfirm(true);
+            return;
+        }
+
+        setShowDeleteClassConfirm(false);
+        try {
+            const res = await fetch(`/api/classes/${id}`, {
+                method: 'DELETE',
+            });
+            if (res.ok) {
+                router.push('/teacher/classes');
+            } else {
+                setInfoModal({
+                    isOpen: true,
+                    title: 'Lỗi',
+                    message: "Xóa lớp thất bại",
+                    type: 'error'
                 });
-                if (res.ok) {
-                    router.push('/teacher/classes'); // Correct usage
-                } else {
-                    alert("Xóa thất bại");
-                }
-            } catch (error) {
-                console.error("Delete error", error);
-                alert("Có lỗi xảy ra");
             }
+        } catch (error) {
+            console.error("Delete error", error);
+            setInfoModal({
+                isOpen: true,
+                title: 'Lỗi',
+                message: "Có lỗi xảy ra khi xóa lớp",
+                type: 'error'
+            });
         }
     };
 
-    const handleRemoveStudent = async (studentId: string) => {
-        if (confirm("Xóa học sinh này khỏi lớp?")) {
-            try {
-                const res = await fetch(`/api/classes/${id}/students/${studentId}`, {
-                    method: 'DELETE',
+    const handleRemoveStudent = async (studentId: string | null, isConfirmed = false) => {
+        if (!isConfirmed && studentId) {
+            setStudentToRemove(studentId);
+            return;
+        }
+
+        const idToRemove = studentId || studentToRemove;
+        if (!idToRemove) return;
+
+        setStudentToRemove(null);
+        try {
+            const res = await fetch(`/api/classes/${id}/students/${idToRemove}`, {
+                method: 'DELETE',
+            });
+            if (res.ok) {
+                // Update state locally
+                setClassDetail(prev => prev ? ({
+                    ...prev,
+                    students: prev.students.filter(s => s.student.id !== idToRemove)
+                }) : null);
+            } else {
+                setInfoModal({
+                    isOpen: true,
+                    title: 'Lỗi',
+                    message: "Xáo học sinh thất bại",
+                    type: 'error'
                 });
-                if (res.ok) {
-                    // Update state locally
-                    setClassDetail(prev => prev ? ({
-                        ...prev,
-                        students: prev.students.filter(s => s.student.id !== studentId)
-                    }) : null);
-                } else {
-                    alert("Xóa thất bại");
-                }
-            } catch (error) {
-                console.error("Remove student error", error);
             }
+        } catch (error) {
+            console.error("Remove student error", error);
         }
     }
 
@@ -146,7 +187,7 @@ export default function ClassDetailPage({ params }: { params: Promise<{ id: stri
                 </div>
 
                 <button
-                    onClick={handleDeleteClass}
+                    onClick={() => handleDeleteClass()}
                     className="px-4 py-2 border-2 border-red-200 text-red-500 hover:bg-red-500 hover:text-white font-bold text-xs uppercase tracking-widest transition-colors flex items-center gap-2"
                 >
                     <Trash2 size={16} /> Xóa Lớp
@@ -233,6 +274,37 @@ export default function ClassDetailPage({ params }: { params: Promise<{ id: stri
                     </div>
                 )}
             </div>
+
+            {/* Confirm Delete Class Modal */}
+            <ConfirmModal
+                isOpen={showDeleteClassConfirm}
+                title="Xóa lớp học?"
+                message="Bạn có chắc chắn muốn xóa lớp này? Mọi dữ liệu về bài thi và điểm số của lớp sẽ bị xóa vĩnh viễn. Hành động này không thể hoàn tác."
+                confirmText="Xóa vĩnh viễn"
+                variant="danger"
+                onConfirm={() => handleDeleteClass(true)}
+                onCancel={() => setShowDeleteClassConfirm(false)}
+            />
+
+            {/* Confirm Remove Student Modal */}
+            <ConfirmModal
+                isOpen={!!studentToRemove}
+                title="Gỡ học sinh?"
+                message="Bạn có chắc chắn muốn gỡ học sinh này khỏi lớp học?"
+                confirmText="Gỡ bỏ"
+                variant="danger"
+                onConfirm={() => handleRemoveStudent(null, true)}
+                onCancel={() => setStudentToRemove(null)}
+            />
+
+            {/* General Info Modal */}
+            <InfoModal
+                isOpen={infoModal.isOpen}
+                title={infoModal.title}
+                message={infoModal.message}
+                type={infoModal.type}
+                onClose={() => setInfoModal(prev => ({ ...prev, isOpen: false }))}
+            />
         </>
     );
 }
