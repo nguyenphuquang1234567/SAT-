@@ -102,6 +102,9 @@ model StudentExam {
   status         StudentExamStatus @default(NOT_STARTED)
   violationCount Int               @default(0)
   timeSpent      Int               @default(0) // Accumulated time in seconds
+  startIp        String?           // IP khi bắt đầu thi
+  submitIp       String?           // IP khi nộp bài
+  sessionId      String?           // Active session ID for single session enforcement
   createdAt      DateTime          @default(now())
   updatedAt      DateTime          @updatedAt
   answers        StudentAnswer[]

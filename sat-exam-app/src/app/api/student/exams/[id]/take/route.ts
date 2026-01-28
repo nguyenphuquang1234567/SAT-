@@ -116,6 +116,7 @@ export async function GET(
             startedAt: studentExam.startedAt,
             timeSpent: (studentExam as any).timeSpent || 0,
             violationCount: studentExam.violationCount || 0,
+            sessionId: (studentExam as any).sessionId || null,
             savedAnswers: existingAnswers
         });
 

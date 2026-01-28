@@ -8,6 +8,7 @@ import ExamTimer from '@/components/exam/ExamTimer';
 import AnswerSheet from '@/components/exam/AnswerSheet';
 import ViolationWarningModal from '@/components/exam/ViolationWarningModal';
 import { useFullscreenLock } from '@/hooks/useFullscreenLock';
+import { useSessionHeartbeat } from '@/hooks/useSessionHeartbeat';
 
 interface Answer {
     id: string;
@@ -60,6 +61,14 @@ export default function ExamTakePage({ params }: { params: Promise<{ id: string 
     const [isReturningToFullscreen, setIsReturningToFullscreen] = useState(false);
     const hasEnteredFullscreenRef = useRef(false);
     const isHandlingViolationRef = useRef(false);
+
+    // Session heartbeat for single session enforcement
+    const [sessionId, setSessionId] = useState<string | null>(null);
+    const { isKicked } = useSessionHeartbeat(
+        unwrappedParams?.id || null,
+        sessionId,
+        !loading && !!data
+    );
 
     // Refs for auto-save and time tracking
     const answersRef = useRef(answers);
@@ -121,6 +130,7 @@ export default function ExamTakePage({ params }: { params: Promise<{ id: string 
                 timeSpentRef.current = result.timeSpent || 0;
                 setViolationCount(result.violationCount || 0);
                 setMaxViolations(result.exam.maxViolations || 3);
+                setSessionId(result.sessionId || null);
                 setLoading(false);
             } catch (err: any) {
                 alert(err.message);
@@ -130,6 +140,14 @@ export default function ExamTakePage({ params }: { params: Promise<{ id: string 
 
         fetchData();
     }, [unwrappedParams, router]);
+
+    // Handle session kick
+    useEffect(() => {
+        if (isKicked) {
+            alert('Phiên thi của bạn đã bị đăng xuất do đăng nhập từ thiết bị khác.');
+            router.push('/student/exams');
+        }
+    }, [isKicked, router]);
 
     // Enter fullscreen on mount
     useEffect(() => {
@@ -246,6 +264,40 @@ export default function ExamTakePage({ params }: { params: Promise<{ id: string 
             document.removeEventListener('visibilitychange', handleVisibilityChange);
         };
     }, [loading, data, handleViolation]);
+
+    // Block keyboard shortcuts (Ctrl+P, F12, F5, etc.)
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            // Block Ctrl+P (Print)
+            if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+                e.preventDefault();
+                return;
+            }
+            // Block F12 (DevTools)
+            if (e.key === 'F12') {
+                e.preventDefault();
+                return;
+            }
+            // Block Ctrl+Shift+I (DevTools)
+            if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'I' || e.key === 'i')) {
+                e.preventDefault();
+                return;
+            }
+            // Block F5 / Ctrl+R (Refresh)
+            if (e.key === 'F5' || ((e.ctrlKey || e.metaKey) && e.key === 'r')) {
+                e.preventDefault();
+                return;
+            }
+            // Block Ctrl+Shift+J (Console)
+            if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'J' || e.key === 'j')) {
+                e.preventDefault();
+                return;
+            }
+        };
+
+        document.addEventListener('keydown', handleKeyDown);
+        return () => document.removeEventListener('keydown', handleKeyDown);
+    }, []);
 
     // Handle return to fullscreen from modal
     const handleReturnToFullscreen = async () => {
