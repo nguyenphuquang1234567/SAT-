@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Be_Vietnam_Pro } from 'next/font/google';
+import Script from 'next/script';
 import './globals.css';
 import 'katex/dist/katex.min.css';
 import { AuthProvider } from '@/providers/AuthProvider';
@@ -22,6 +23,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <Script
+          src="https://www.desmos.com/api/v1.9/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6"
+          strategy="beforeInteractive"
+        />
+      </head>
       <body className={`${beVietnamPro.variable} font-sans antialiased`}>
         <AuthProvider>{children}</AuthProvider>
       </body>
