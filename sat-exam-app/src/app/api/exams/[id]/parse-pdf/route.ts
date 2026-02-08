@@ -19,6 +19,10 @@ interface ParsedQuestion {
     };
 }
 
+export const maxDuration = 60; // Increase timeout to 60 seconds (for Pro/Enterprise on Vercel)
+// Note: App Router doesn't use the 'config' export for bodyParser. 
+// It handles large bodies automatically up to the platform limit.
+
 export async function POST(
     request: NextRequest,
     { params }: { params: Promise<{ id: string }> }

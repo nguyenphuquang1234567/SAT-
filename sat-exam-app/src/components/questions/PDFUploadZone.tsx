@@ -35,8 +35,8 @@ export default function PDFUploadZone({
                 return;
             }
 
-            if (file.size > 10 * 1024 * 1024) {
-                onError('File không được vượt quá 10MB');
+            if (file.size > 50 * 1024 * 1024) {
+                onError('File không được vượt quá 50MB');
                 return;
             }
 
@@ -151,7 +151,7 @@ export default function PDFUploadZone({
                             {isDragOver ? 'Thả file tại đây' : 'Upload PDF Đề Thi'}
                         </p>
                         <p className="text-sm text-[#003366]/60 mt-2">
-                            Kéo thả hoặc click để chọn file PDF (tối đa 10MB)
+                            Kéo thả hoặc click để chọn file PDF (tối đa 50MB)
                         </p>
                     </div>
                     <div className="flex items-center gap-2 text-xs text-[#003366]/50 mt-4">

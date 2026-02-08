@@ -119,11 +119,8 @@ export default function LoginPage() {
                     </form>
 
                     <div className="mt-12 pt-8 border-t-2 border-cb-blue/10 dark:border-cb-yellow/10 text-center">
-                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                            Chưa có tài khoản?{' '} <br />
-                            <Link href="/register" className="text-cb-blue dark:text-cb-yellow hover:underline decoration-2 underline-offset-4 decoration-cb-yellow mt-2 inline-block">
-                                Tạo tài khoản mới
-                            </Link>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest italic">
+                            Liên hệ giáo viên hoặc quản trị viên nếu bạn chưa có tài khoản.
                         </p>
                     </div>
                 </div>

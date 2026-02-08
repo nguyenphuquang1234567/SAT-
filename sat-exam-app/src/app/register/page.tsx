@@ -16,6 +16,12 @@ export default function RegisterPage() {
     const [error, setError] = useState('');
     const router = useRouter();
 
+    // Redirect to login as registration is disabled
+    if (typeof window !== 'undefined') {
+        router.push('/login');
+        return null;
+    }
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);

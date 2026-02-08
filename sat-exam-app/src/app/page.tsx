@@ -54,11 +54,8 @@ export default function Home() {
                 </div>
               ) : (
                 <div className="flex items-center gap-4">
-                  <Link href="/login" className="text-xs font-bold uppercase tracking-widest text-cb-blue dark:text-cb-yellow hover:underline decoration-2 underline-offset-4">
+                  <Link href="/login" className="btn-cb-primary py-2 px-8 text-xs">
                     Đăng nhập
-                  </Link>
-                  <Link href="/register" className="btn-cb-primary py-2 px-6 text-xs">
-                    Bắt đầu
                   </Link>
                 </div>
               )}
@@ -94,10 +91,10 @@ export default function Home() {
                 </Link>
               ) : (
                 <Link
-                  href="/register"
+                  href="/login"
                   className="btn-cb-accent group w-full sm:w-auto inline-flex items-center justify-center gap-3"
                 >
-                  <span>TẠO TÀI KHOẢN NGAY</span>
+                  <span>ĐĂNG NHẬP NGAY</span>
                   <ChevronRight size={20} className="group-hover:translate-x-1 transition-transform" />
                 </Link>
               )}
