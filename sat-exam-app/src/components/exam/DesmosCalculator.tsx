@@ -82,8 +82,8 @@ export default function DesmosCalculator({ isOpen, onClose }: DesmosCalculatorPr
             style={{
                 left: position.x,
                 top: position.y,
-                width: isMinimized ? 280 : 950,
-                height: isMinimized ? 48 : 700,
+                width: isMinimized ? 280 : 1100,
+                height: isMinimized ? 48 : 800,
                 display: isOpen ? 'block' : 'none', // Hide instead of unmount
             }}
             onMouseDown={handleMouseDown}
