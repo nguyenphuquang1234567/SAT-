@@ -3,12 +3,13 @@
 
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { ChevronLeft, ChevronRight, Save, LogOut, Bookmark, Maximize } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Save, LogOut, Bookmark, Maximize, Calculator } from 'lucide-react';
 import ExamTimer from '@/components/exam/ExamTimer';
 import AnswerSheet from '@/components/exam/AnswerSheet';
 import ViolationWarningModal from '@/components/exam/ViolationWarningModal';
 import ConfirmModal from '@/components/exam/ConfirmModal';
 import InfoModal from '@/components/exam/InfoModal';
+import DesmosCalculator from '@/components/exam/DesmosCalculator';
 import { useFullscreenLock } from '@/hooks/useFullscreenLock';
 import { useSessionHeartbeat } from '@/hooks/useSessionHeartbeat';
 
@@ -53,6 +54,7 @@ export default function ExamTakePage({ params }: { params: Promise<{ id: string 
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
+    const [showCalculator, setShowCalculator] = useState(false);
 
     // Fullscreen lock state
     const { isFullscreen, enterFullscreen, isSupported } = useFullscreenLock();
@@ -338,6 +340,12 @@ export default function ExamTakePage({ params }: { params: Promise<{ id: string 
                 e.preventDefault();
                 return;
             }
+            // Toggle calculator with Ctrl+D / Cmd+D
+            if ((e.ctrlKey || e.metaKey) && (e.key === 'd' || e.key === 'D')) {
+                e.preventDefault();
+                setShowCalculator(prev => !prev);
+                return;
+            }
         };
 
         document.addEventListener('keydown', handleKeyDown);
@@ -529,6 +537,12 @@ export default function ExamTakePage({ params }: { params: Promise<{ id: string 
                 </div>
             )}
 
+            {/* Desmos Calculator */}
+            <DesmosCalculator
+                isOpen={showCalculator}
+                onClose={() => setShowCalculator(false)}
+            />
+
             <div className="min-h-screen bg-gray-100 flex flex-col h-screen overflow-hidden text-[#003366]">
                 {/* Header */}
                 <header className="bg-white border-b border-gray-200 z-30 h-16 shadow-sm flex-shrink-0 relative">
@@ -567,6 +581,13 @@ export default function ExamTakePage({ params }: { params: Promise<{ id: string 
                                     </span>
                                 )}
                             </div>
+                            <button
+                                onClick={() => setShowCalculator(!showCalculator)}
+                                className={`p-2 rounded-lg transition-colors ${showCalculator ? 'bg-cb-blue text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                                title="Máy tính (Ctrl+D)"
+                            >
+                                <Calculator size={20} />
+                            </button>
                             <button
                                 onClick={() => handleSubmit(false)}
                                 disabled={isSubmitting}
