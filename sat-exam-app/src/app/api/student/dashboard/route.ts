@@ -53,9 +53,20 @@ export async function GET(request: NextRequest) {
         });
 
         // Filter out exams that are already submitted by this student
-        // Or keep them but mark as 'completed' if we want to show everything
-        // For "Upcoming/Active", usually we want things TO DO.
+        // Also hide exams that expired more than 5 days ago
+        const now = new Date();
+        const FIVE_DAYS_IN_MS = 5 * 24 * 60 * 60 * 1000;
+
         const todoExams = availableExams.filter(exam => {
+            // 1. Check if expired more than 5 days ago
+            if (exam.endTime) {
+                const expiryTime = new Date(exam.endTime).getTime();
+                if (now.getTime() - expiryTime > FIVE_DAYS_IN_MS) {
+                    return false;
+                }
+            }
+
+            // 2. Check if already submitted
             const attempt = exam.studentExams[0];
             return !attempt || attempt.status === 'NOT_STARTED' || attempt.status === 'IN_PROGRESS';
         }).map(exam => ({
