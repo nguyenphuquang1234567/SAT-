@@ -84,9 +84,22 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
         });
 
         // Separate into upcoming/active and completed
-        const availableExams = exams.filter(
-            (e) => !e.studentExams[0] || ["NOT_STARTED", "IN_PROGRESS"].includes(e.studentExams[0].status)
-        ).map(e => ({
+        const now = new Date();
+        const FIVE_DAYS_IN_MS = 5 * 24 * 60 * 60 * 1000;
+
+        const availableExams = exams.filter(e => {
+            // 1. Hide if expired more than 5 days ago
+            if (e.endTime) {
+                const expiryTime = new Date(e.endTime).getTime();
+                if (now.getTime() - expiryTime > FIVE_DAYS_IN_MS) {
+                    return false;
+                }
+            }
+
+            // 2. Hide if already submitted
+            const attempt = e.studentExams[0];
+            return !attempt || ["NOT_STARTED", "IN_PROGRESS"].includes(attempt.status);
+        }).map(e => ({
             id: e.id,
             title: e.title,
             description: e.description,

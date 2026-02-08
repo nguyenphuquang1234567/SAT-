@@ -23,6 +23,7 @@ interface Exam {
     description: string;
     duration: number;
     startTime: string | null;
+    endTime: string | null;
     questionCount: number;
     status: string;
     attemptStatus: string;
@@ -163,13 +164,19 @@ export default function StudentClassDetailPage() {
                                                 </div>
                                             </div>
 
-                                            <Link
-                                                href={`/student/exams/${exam.id}/intro`}
-                                                className="flex items-center justify-center gap-2 px-8 py-3 bg-cb-blue text-white rounded-xl font-black uppercase tracking-widest text-xs shadow-lg shadow-blue-900/10 hover:bg-blue-700 transition-all self-start md:self-center"
-                                            >
-                                                {exam.attemptStatus === 'IN_PROGRESS' ? 'Tiếp tục thi' : 'Bắt đầu làm bài'}
-                                                <ArrowRight size={16} />
-                                            </Link>
+                                            {exam.endTime && new Date() > new Date(exam.endTime) ? (
+                                                <div className="flex items-center justify-center gap-2 px-8 py-3 bg-red-50 text-red-600 rounded-xl font-black uppercase tracking-widest text-xs border border-red-100 self-start md:self-center">
+                                                    Hết hạn
+                                                </div>
+                                            ) : (
+                                                <Link
+                                                    href={`/student/exams/${exam.id}/intro`}
+                                                    className="flex items-center justify-center gap-2 px-8 py-3 bg-cb-blue text-white rounded-xl font-black uppercase tracking-widest text-xs shadow-lg shadow-blue-900/10 hover:bg-blue-700 transition-all self-start md:self-center"
+                                                >
+                                                    {exam.attemptStatus === 'IN_PROGRESS' ? 'Tiếp tục thi' : 'Bắt đầu làm bài'}
+                                                    <ArrowRight size={16} />
+                                                </Link>
+                                            )}
                                         </div>
                                     </div>
                                 ))}
