@@ -139,9 +139,9 @@ export default function StudentDashboard() {
                                                 </div>
                                                 <h3 className="font-bold text-lg text-gray-900 group-hover:text-cb-blue transition-colors">{exam.title}</h3>
                                                 <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-2 text-sm text-gray-500 font-medium">
-                                                    {exam.startTime && (
+                                                    {exam.endTime && (
                                                         <span className="flex items-center gap-1 text-cb-blue font-bold">
-                                                            <Calendar size={14} /> Deadline: {new Date(exam.startTime).toLocaleString('vi-VN', {
+                                                            <Calendar size={14} /> Deadline: {new Date(exam.endTime).toLocaleString('vi-VN', {
                                                                 weekday: 'short',
                                                                 day: '2-digit',
                                                                 month: '2-digit',
