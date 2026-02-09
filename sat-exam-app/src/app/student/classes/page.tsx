@@ -2,7 +2,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Users, BookOpen, Search, Filter, Calendar, Plus, X } from 'lucide-react';
+import { Users, BookOpen, Search, Filter, Calendar, Plus, X, CheckCircle, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -23,6 +23,7 @@ export default function StudentClassesPage() {
     const [joinCode, setJoinCode] = useState('');
     const [isJoining, setIsJoining] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [showSuccess, setShowSuccess] = useState(false);
 
     const fetchClasses = () => {
         setLoading(true);
@@ -41,6 +42,16 @@ export default function StudentClassesPage() {
     useEffect(() => {
         fetchClasses();
     }, []);
+
+    // Auto-hide success message
+    useEffect(() => {
+        if (showSuccess) {
+            const timer = setTimeout(() => {
+                setShowSuccess(false);
+            }, 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [showSuccess]);
 
     const handleJoinClass = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -64,7 +75,7 @@ export default function StudentClassesPage() {
             setShowJoinModal(false);
             setJoinCode('');
             fetchClasses(); // Refresh list
-            alert('Tham gia lớp học thành công!');
+            setShowSuccess(true);
         } catch (err: any) {
             setError(err.message);
         } finally {
@@ -141,6 +152,28 @@ export default function StudentClassesPage() {
                     </div>
                 )}
             </div>
+
+            {/* Success Notification */}
+            {showSuccess && (
+                <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] animate-in slide-in-from-bottom-10 fade-in duration-500">
+                    <div className="bg-cb-blue border-b-4 border-cb-yellow text-white px-8 py-4 shadow-[0_20px_50px_rgba(0,51,102,0.3)] flex items-center gap-4 min-w-[320px]">
+                        <div className="w-10 h-10 bg-cb-yellow text-cb-blue rounded-full flex items-center justify-center shadow-lg">
+                            <CheckCircle size={24} />
+                        </div>
+                        <div>
+                            <p className="text-xs font-black uppercase tracking-widest text-cb-yellow/80">Thành công</p>
+                            <p className="font-bold text-lg leading-tight uppercase italic tracking-tight">Đã gia nhập lớp học!</p>
+                        </div>
+                        <button
+                            onClick={() => setShowSuccess(false)}
+                            className="ml-auto text-white/40 hover:text-white transition-colors"
+                        >
+                            <X size={20} />
+                        </button>
+                    </div>
+                </div>
+            )}
+
             {/* Join Class Modal */}
             {showJoinModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-cb-blue/20 backdrop-blur-sm">
