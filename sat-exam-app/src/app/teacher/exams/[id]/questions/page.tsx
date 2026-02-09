@@ -32,7 +32,7 @@ interface Question {
     optionB: string;
     optionC: string;
     optionD: string;
-    correctAnswer: 'A' | 'B' | 'C' | 'D';
+    correctAnswer: string;
     order: number;
 }
 
