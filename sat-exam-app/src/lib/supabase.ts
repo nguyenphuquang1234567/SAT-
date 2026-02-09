@@ -45,4 +45,29 @@ export async function uploadExamPdf(
     };
 }
 
+/**
+ * Generate a signed upload URL for direct client-side upload to skip server limits
+ */
+export async function getSignedUploadUrl(
+    examId: string,
+    filename: string
+): Promise<{ signedUrl: string; path: string; token: string }> {
+    const safeName = filename.replace(/[^a-zA-Z0-9.-]/g, '_');
+    const filePath = `${examId}/${Date.now()}_${safeName}`;
+
+    const { data, error } = await supabaseAdmin.storage
+        .from(EXAM_PDF_BUCKET)
+        .createSignedUploadUrl(filePath);
+
+    if (error) {
+        throw new Error(`Failed to create signed upload URL: ${error.message}`);
+    }
+
+    return {
+        signedUrl: data.signedUrl,
+        path: filePath,
+        token: data.token,
+    };
+}
+
 

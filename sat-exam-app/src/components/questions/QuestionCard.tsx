@@ -14,7 +14,7 @@ interface QuestionCardProps {
         optionB: string;
         optionC: string;
         optionD: string;
-        correctAnswer: 'A' | 'B' | 'C' | 'D';
+        correctAnswer: string;
         rawNumber?: number;
     };
 
@@ -149,8 +149,8 @@ export default function QuestionCard({
             <div className="grid gap-2">
                 {optionLabels.map((label, i) => {
                     const key = optionKeys[i];
-                    const isCorrect = question.correctAnswer === label;
-                    const editIsCorrect = editedQuestion.correctAnswer === label;
+                    const isCorrect = question.correctAnswer.toUpperCase() === label;
+                    const editIsCorrect = editedQuestion.correctAnswer.toUpperCase() === label;
 
                     return (
                         <div
