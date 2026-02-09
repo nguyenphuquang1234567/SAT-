@@ -26,6 +26,7 @@ interface ExamDetail {
         id: string;
         name: string;
     };
+    pdfUrl: string | null;
     questions: Question[];
 }
 
@@ -198,6 +199,32 @@ export default function ExamDetailPage({ params }: { params: Promise<{ id: strin
                     </div>
                     <p className="text-2xl font-bold dark:text-white">{exam.questions.length} câu</p>
                 </div>
+
+                {exam.pdfUrl && (
+                    <div className="bg-white dark:bg-cb-blue-900 border-l-4 border-red-500 p-6 shadow-sm md:col-span-3">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3 text-red-500">
+                                <FileText size={24} />
+                                <h3 className="font-black uppercase tracking-widest text-sm text-slate-800 dark:text-white">File PDF Đề Thi</h3>
+                            </div>
+                            <a
+                                href={exam.pdfUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="px-6 py-2 bg-red-500 text-white font-black uppercase tracking-widest text-xs hover:bg-red-600 transition-colors shadow-lg shadow-red-500/20"
+                            >
+                                Xem PDF toàn màn hình
+                            </a>
+                        </div>
+                        <div className="mt-4 border-2 border-slate-100 dark:border-white/5 h-[400px] overflow-hidden">
+                            <iframe
+                                src={`${exam.pdfUrl}#toolbar=0&navpanes=0&scrollbar=1`}
+                                className="w-full h-full border-none"
+                                title="Exam PDF Preview"
+                            />
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* Main Action Area */}
