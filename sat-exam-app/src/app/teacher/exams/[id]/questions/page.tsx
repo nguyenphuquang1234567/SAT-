@@ -10,6 +10,7 @@ import {
     CheckCircle2,
     AlertCircle,
     Loader2,
+    ExternalLink,
 } from 'lucide-react';
 import ConfirmModal from '@/components/exam/ConfirmModal';
 import InfoModal from '@/components/exam/InfoModal';
@@ -264,173 +265,174 @@ export default function QuestionsPage({
     const isDraft = exam.status === 'DRAFT';
 
     return (
-        <div className="space-y-8">
-            {/* Header */}
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                    <button
-                        onClick={() => router.push(`/teacher/exams/${examId}`)}
-                        className="p-2 hover:bg-[#003366]/10 transition-colors"
-                    >
-                        <ArrowLeft className="w-5 h-5 text-[#003366]" />
-                    </button>
-                    <div>
-                        <h1 className="text-2xl font-bold text-[#003366]">{exam.title}</h1>
-                        <p className="text-sm text-[#003366]/60">
-                            {exam.class.name} • {totalQuestions} câu hỏi
-                        </p>
+        <div className="max-w-7xl mx-auto px-4 py-8">
+            <div className="flex flex-col gap-8">
+                {/* Header */}
+                <div className="flex items-center justify-between sticky top-0 bg-white/80 backdrop-blur-md z-10 py-2">
+                    <div className="flex items-center gap-4">
+                        <button
+                            onClick={() => router.push(`/teacher/exams/${examId}`)}
+                            className="p-2 hover:bg-[#003366]/10 transition-colors"
+                        >
+                            <ArrowLeft className="w-5 h-5 text-[#003366]" />
+                        </button>
+                        <div>
+                            <h1 className="text-2xl font-bold text-[#003366]">{exam.title}</h1>
+                            <p className="text-sm text-[#003366]/60">
+                                {exam.class.name} • {totalQuestions} câu hỏi
+                            </p>
+                        </div>
                     </div>
-                </div>
 
-                <div className="flex items-center gap-3">
-                    <button
-                        onClick={() => router.push(`/teacher/exams/${examId}/questions/new`)}
-                        className="flex items-center gap-2 px-4 py-2 border-2 border-[#003366] text-[#003366]
-                       hover:bg-[#003366] hover:text-white transition-colors font-semibold"
-                    >
-                        <Plus className="w-4 h-4" />
-                        Thêm Câu Hỏi
-                    </button>
-
-                    <button
-                        onClick={() => router.push(`/teacher/exams/${examId}/preview`)}
-                        className="flex items-center gap-2 px-4 py-2 border-2 border-[#003366]/30 text-[#003366]/60
-                       hover:border-[#003366] hover:text-[#003366] transition-colors font-semibold"
-                    >
-                        <FileText className="w-4 h-4" />
-                        Xem Trước
-                    </button>
-
-                    {currentPdfUrl && (
-                        <a
-                            href={currentPdfUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center gap-2 px-4 py-2 bg-[#003366]/10 text-[#003366]
+                    <div className="flex items-center gap-3">
+                        <button
+                            onClick={() => router.push(`/teacher/exams/${examId}/questions/new`)}
+                            className="flex items-center gap-2 px-4 py-2 border-2 border-[#003366] text-[#003366]
                            hover:bg-[#003366] hover:text-white transition-colors font-semibold"
                         >
-                            <FileText className="w-4 h-4" />
-                            PDF Gốc
-                        </a>
-                    )}
-                </div>
-
-            </div>
-
-            {/* Status Messages */}
-            {error && (
-                <div className="flex items-center gap-3 p-4 bg-red-50 border-2 border-red-200 text-red-700">
-                    <AlertCircle className="w-5 h-5" />
-                    {error}
-                </div>
-            )}
-
-            {successMessage && (
-                <div className="flex items-center gap-3 p-4 bg-green-50 border-2 border-green-200 text-green-700">
-                    <CheckCircle2 className="w-5 h-5" />
-                    {successMessage}
-                </div>
-            )}
-
-            {/* PDF Upload Section - Only show for DRAFT exams */}
-            {isDraft && (
-                <section>
-                    <h2 className="text-lg font-bold text-[#003366] mb-4">
-                        Upload Đề Thi PDF
-                    </h2>
-                    <PDFUploadZone
-                        examId={examId}
-                        onParseComplete={handleParseComplete}
-                        onError={(err) => setError(err)}
-                    />
-                </section>
-            )}
-
-            {/* Parsed Questions (Pending Save) */}
-            {parsedQuestions.length > 0 && (
-                <section className="border-4 border-[#FFCC00] p-6 bg-[#FFCC00]/5">
-                    <div className="flex items-center justify-between mb-6">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-[#FFCC00] flex items-center justify-center">
-                                <FileText className="w-5 h-5 text-[#003366]" />
-                            </div>
-                            <div>
-                                <h2 className="text-lg font-bold text-[#003366]">
-                                    Câu Hỏi Từ PDF ({parsedQuestions.length})
-                                </h2>
-                                <p className="text-sm text-[#003366]/60">
-                                    Review và chỉnh sửa trước khi lưu
-                                </p>
-                            </div>
-                        </div>
+                            <Plus className="w-4 h-4" />
+                            Thêm Câu Hỏi
+                        </button>
 
                         <button
-                            onClick={handleSaveAll}
-                            disabled={saving}
-                            className="flex items-center gap-2 px-6 py-3 bg-[#003366] text-white
-                         hover:bg-[#002244] transition-colors font-bold disabled:opacity-50"
+                            onClick={() => router.push(`/teacher/exams/${examId}/preview`)}
+                            className="flex items-center gap-2 px-4 py-2 border-2 border-[#003366]/30 text-[#003366]/60
+                           hover:border-[#003366] hover:text-[#003366] transition-colors font-semibold"
                         >
-                            {saving ? (
-                                <Loader2 className="w-5 h-5 animate-spin" />
-                            ) : (
-                                <Save className="w-5 h-5" />
-                            )}
-                            Lưu Tất Cả
+                            <FileText className="w-4 h-4" />
+                            Xem Trước
                         </button>
-                    </div>
 
-                    <div className="grid gap-4">
-                        {parsedQuestions.map((question, index) => (
-                            <QuestionCard
-                                key={index}
-                                question={question}
-                                index={index}
-                                onEdit={(updated) => handleEditParsed(index, updated as ParsedQuestion)}
-                                onDelete={() => handleDeleteParsed(index)}
-                            />
-                        ))}
+                        {currentPdfUrl && (
+                            <a
+                                href={currentPdfUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-2 px-4 py-2 bg-[#003366]/10 text-[#003366]
+                               hover:bg-[#003366] hover:text-white transition-colors font-semibold"
+                            >
+                                <ExternalLink className="w-4 h-4" />
+                                PDF Gốc
+                            </a>
+                        )}
                     </div>
-                </section>
-            )}
-
-            {/* Saved Questions */}
-            {savedQuestions.length > 0 && (
-                <section>
-                    <h2 className="text-lg font-bold text-[#003366] mb-4">
-                        Câu Hỏi Đã Lưu ({savedQuestions.length})
-                    </h2>
-                    <div className="grid gap-4">
-                        {savedQuestions.map((question, index) => (
-                            <QuestionCard
-                                key={question.id}
-                                question={question}
-                                index={index}
-                                draggable={isDraft}
-                                onEdit={(updated) => handleEditSaved(question.id, updated)}
-                                onDelete={() => handleDeleteSaved(question.id)}
-                                onDragStart={handleDragStart(index)}
-                                onDragOver={handleDragOver(index)}
-                                onDrop={handleDrop(index)}
-                            />
-                        ))}
-                    </div>
-                </section>
-            )}
-
-            {/* Empty State */}
-            {savedQuestions.length === 0 && parsedQuestions.length === 0 && (
-                <div className="text-center py-16 border-2 border-dashed border-[#003366]/20">
-                    <FileText className="w-16 h-16 mx-auto text-[#003366]/30 mb-4" />
-                    <h3 className="text-lg font-bold text-[#003366] mb-2">
-                        Chưa có câu hỏi nào
-                    </h3>
-                    <p className="text-[#003366]/60 mb-6">
-                        Upload file PDF để AI tự động trích xuất câu hỏi,
-                        <br />
-                        hoặc thêm câu hỏi thủ công
-                    </p>
                 </div>
-            )}
+
+                {/* Status Messages */}
+                {error && (
+                    <div className="flex items-center gap-3 p-4 bg-red-50 border-2 border-red-200 text-red-700">
+                        <AlertCircle className="w-5 h-5" />
+                        {error}
+                    </div>
+                )}
+
+                {successMessage && (
+                    <div className="flex items-center gap-3 p-4 bg-green-50 border-2 border-green-200 text-green-700">
+                        <CheckCircle2 className="w-5 h-5" />
+                        {successMessage}
+                    </div>
+                )}
+
+                {/* PDF Upload Section - Only show for DRAFT exams */}
+                {isDraft && (
+                    <section>
+                        <h2 className="text-lg font-bold text-[#003366] mb-4">
+                            Upload Đề Thi PDF
+                        </h2>
+                        <PDFUploadZone
+                            examId={examId}
+                            onParseComplete={handleParseComplete}
+                            onError={(err) => setError(err)}
+                        />
+                    </section>
+                )}
+
+                {/* Parsed Questions (Pending Save) */}
+                {parsedQuestions.length > 0 && (
+                    <section className="border-4 border-[#FFCC00] p-6 bg-[#FFCC00]/5">
+                        <div className="flex items-center justify-between mb-6">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-[#FFCC00] flex items-center justify-center">
+                                    <FileText className="w-5 h-5 text-[#003366]" />
+                                </div>
+                                <div>
+                                    <h2 className="text-lg font-bold text-[#003366]">
+                                        Câu Hỏi Từ PDF ({parsedQuestions.length})
+                                    </h2>
+                                    <p className="text-sm text-[#003366]/60">
+                                        Review và chỉnh sửa trước khi lưu
+                                    </p>
+                                </div>
+                            </div>
+
+                            <button
+                                onClick={handleSaveAll}
+                                disabled={saving}
+                                className="flex items-center gap-2 px-6 py-3 bg-[#003366] text-white
+                             hover:bg-[#002244] transition-colors font-bold disabled:opacity-50"
+                            >
+                                {saving ? (
+                                    <Loader2 className="w-5 h-5 animate-spin" />
+                                ) : (
+                                    <Save className="w-5 h-5" />
+                                )}
+                                Lưu Tất Cả
+                            </button>
+                        </div>
+
+                        <div className="grid gap-4">
+                            {parsedQuestions.map((question, index) => (
+                                <QuestionCard
+                                    key={index}
+                                    question={question}
+                                    index={index}
+                                    onEdit={(updated) => handleEditParsed(index, updated as ParsedQuestion)}
+                                    onDelete={() => handleDeleteParsed(index)}
+                                />
+                            ))}
+                        </div>
+                    </section>
+                )}
+
+                {/* Saved Questions */}
+                {savedQuestions.length > 0 && (
+                    <section>
+                        <h2 className="text-lg font-bold text-[#003366] mb-4">
+                            Câu Hỏi Đã Lưu ({savedQuestions.length})
+                        </h2>
+                        <div className="grid gap-4">
+                            {savedQuestions.map((question, index) => (
+                                <QuestionCard
+                                    key={question.id}
+                                    question={question}
+                                    index={index}
+                                    draggable={isDraft}
+                                    onEdit={(updated) => handleEditSaved(question.id, updated)}
+                                    onDelete={() => handleDeleteSaved(question.id)}
+                                    onDragStart={handleDragStart(index)}
+                                    onDragOver={handleDragOver(index)}
+                                    onDrop={handleDrop(index)}
+                                />
+                            ))}
+                        </div>
+                    </section>
+                )}
+
+                {/* Empty State */}
+                {savedQuestions.length === 0 && parsedQuestions.length === 0 && (
+                    <div className="text-center py-16 border-2 border-dashed border-[#003366]/20">
+                        <FileText className="w-16 h-16 mx-auto text-[#003366]/30 mb-4" />
+                        <h3 className="text-lg font-bold text-[#003366] mb-2">
+                            Chưa có câu hỏi nào
+                        </h3>
+                        <p className="text-[#003366]/60 mb-6">
+                            Upload file PDF để AI tự động trích xuất câu hỏi,
+                            <br />
+                            hoặc thêm câu hỏi thủ công
+                        </p>
+                    </div>
+                )}
+            </div>
 
             {/* Confirm Delete Modal */}
             <ConfirmModal
