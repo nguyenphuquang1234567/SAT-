@@ -32,7 +32,6 @@ export default function Home() {
 
           <div className="flex items-center gap-8">
             <div className="hidden lg:flex items-center gap-6">
-              <Link href="#features" className="text-xs font-bold uppercase tracking-widest text-cb-blue hover:text-cb-blue-700 dark:text-cb-yellow/80 transition-colors">Tính năng</Link>
               <Link href="#about" className="text-xs font-bold uppercase tracking-widest text-cb-blue hover:text-cb-blue-700 dark:text-cb-yellow/80 transition-colors">Về chúng tôi</Link>
             </div>
 
@@ -99,7 +98,7 @@ export default function Home() {
                 </Link>
               )}
               <Link
-                href="#features"
+                href="#about"
                 className="btn-cb-primary w-full sm:w-auto inline-flex items-center justify-center"
               >
                 TÌM HIỂU THÊM
@@ -135,6 +134,47 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* About Us Section */}
+      <section id="about" className="py-24 bg-white dark:bg-cb-blue-950 border-t-2 border-cb-blue">
+        <div className="container max-w-[1400px] mx-auto px-6">
+          <div className="flex flex-col lg:flex-row gap-16 items-start">
+            <div className="lg:w-1/3">
+              <h2 className="text-4xl md:text-5xl font-black tracking-tighter text-cb-blue dark:text-cb-yellow italic uppercase">
+                VỀ CHÚNG TÔI
+              </h2>
+              <div className="mt-6 h-2 w-24 bg-cb-blue dark:bg-cb-yellow shadow-[4px_4px_0px_#fddb00]"></div>
+            </div>
+            <div className="lg:w-2/3 space-y-8">
+              <p className="text-xl md:text-2xl font-bold leading-relaxed text-cb-blue dark:text-slate-100 italic">
+                Atlas Plus Consulting là đơn vị đào tạo SAT được xây dựng bởi những người đã trực tiếp trải qua quá trình luyện thi và ứng tuyển vào các trường đại học Mỹ.
+                Chúng mình hiểu rằng SAT không chỉ là một kỳ thi chuẩn hóa, mà là một bước chiến lược trong toàn bộ hồ sơ du học.
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-12 text-cb-blue/80 dark:text-slate-400">
+                <div className="space-y-4">
+                  <p className="leading-relaxed">
+                    Tại Atlas, SAT được tiếp cận bằng tư duy hệ thống. Chúng mình không dạy theo kiểu luyện đề đơn thuần, mà tập trung vào nền tảng học thuật, khả năng tư duy phân tích và chiến lược làm bài dưới áp lực thời gian.
+                  </p>
+                  <p className="leading-relaxed">
+                    Mỗi học viên đều có lộ trình cá nhân hóa dựa trên trình độ hiện tại, mục tiêu và kế hoạch dài hạn.
+                  </p>
+                </div>
+                <div className="space-y-4">
+                  <p className="leading-relaxed">
+                    Đội ngũ giảng viên của Atlas có kinh nghiệm luyện thi thực tế và hiểu rõ cấu trúc đề, cách ra bẫy cũng như phương pháp tối ưu điểm số.
+                    Quan trọng hơn, chúng mình đồng hành sát sao để học viên không chỉ cải thiện kết quả, mà còn xây dựng sự tự tin và năng lực học thuật bền vững.
+                  </p>
+                  <p className="leading-relaxed font-bold text-cb-blue dark:text-cb-yellow italic">
+                    Atlas không chỉ giúp bạn tăng điểm. Chúng mình giúp bạn hiểu bản chất bài thi và làm chủ kỳ thi một cách chiến lược.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
 
       {/* Footer Branding */}
       <footer className="border-t-2 border-cb-blue bg-white dark:bg-cb-blue-950 py-12">
